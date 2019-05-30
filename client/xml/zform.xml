@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ZFORM xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="zform01.xsd">
+
+	<ZFORMHEAD>
+		<!--Версия документа (Числовой, обязательный)-->
+		<VER>1</VER>
+		<!--Уникальный идентификатор документа (GUID)-->
+		<UID>00000000-0000-0000-0000-000000000001</UID>
+		<!--ЕДРПОУ/ДРФО/№ паспорта продавца (10 символов)-->
+		<TIN>73737373</TIN>
+		<!--Номер отчета (128 символов)-->
+		<INN>0000012345658</INN>
+		<!--Наименование продавца (256 символов)-->
+		<ORGNAME>ТОВ "ТЕСТ"</ORGNAME>
+		<!--Наименование точки продаж (256 символов)-->
+		<POINTNAME>магазин "ТЕСТ"</POINTNAME>
+		<!--Адрес точки продаж (256 символов)-->
+		<POINTADDR>вул. Кирилівська, 30</POINTADDR>
+		<!--Дата операции (ддммгггг, обязательный)-->
+		<ORDERDATE>18112015</ORDERDATE>
+		<!--Время операции (ччммсс, обязательный)-->
+		<ORDERTIME>201543</ORDERTIME>
+		<!--Порядковый номер документа (128 символов, обязательный)-->
+		<ORDERNUM>12345678</ORDERNUM>
+		<!--Фискальный номер документа (128 символов, необязательный)-->
+		<ORDERTAXNUM>101234567890123</ORDERTAXNUM>
+		<!--Номер кассы (64 символа, обязательный)-->
+		<CASHDESKNUM>19</CASHDESKNUM>
+		<!--Фискальный номер регистратора расчётных операций (128 символов, необязательный)-->
+		<CASHREGISTERNUM>012345678901</CASHREGISTERNUM>
+		<!--ФИО кассира (128 символов, обязательный)-->
+		<CASHIER>Семко А.М.</CASHIER>
+	</ZFORMHEAD>
+
+	<ZFORMPAY>
+		<!--Всего сумма реализации (15.2 цифры)-->
+		<SUMREAL>00.00</SUMREAL>
+        	<ZFORMREALIZ>		
+			<ROW ROWNUM="1">
+				<!--форма оплаты реализации (64символа, обязательный)-->
+				<FORMPAYREAL>Готівка</FORMPAYREAL>
+				<!--Сумма оплаты (15.2 цифры)-->
+				<SUMPAYREAL>00.00</SUMPAYREAL>
+			</ROW>	
+        	</ZFORMREALIZ>		
+			
+		<!--Всего сумма возврата (15.2 цифры)-->
+		<SUMRET>00.00</SUMRET>
+        	<ZFORMRETURN>		
+			<ROW ROWNUM="1">
+				<!--форма оплаты возврата(64символа, обязательный)-->
+				<FORMPAYRET>Готівка</FORMPAYRET>
+				<!--Сумма оплаты (15.2 цифры)-->
+				<SUMPAYRET>00.00</SUMPAYRET>
+			</ROW>			
+        	</ZFORMRETURN>		
+	</ZFORMPAY>
+	
+<!--Реализація-->
+	<ZFORMSUMREAL>
+        	<ZFORMTURNOVER>		
+			<ROW ROWNUM="1">
+				<!--обіг (64символа, обязательный)-->
+				<TURNOVERNAME>Обіг А</TURNOVERNAME>
+				<!--сума по обігу (15.2 цифры)-->
+				<TURNOVERTOTAL>00.00</TURNOVERTOTAL>
+			</ROW>	
+        	</ZFORMTURNOVER>		
+        	<ZFORMTAX>		
+			<ROW ROWNUM="1">
+				<!--ставка ПДВ (64символа, обязательный)-->
+				<TAXNAME>ПДВ А=0%</TAXNAME>
+				<!--сума ПДВ (15.2 цифры)-->
+				<TAXTOTAL>00.00</TAXTOTAL>
+			</ROW>	
+        	</ZFORMTAX>		
+		<!--Сумма оборота (15.2 цифры)-->
+		<TOTALSUMREAL>00.00</TOTALSUMREAL>
+		<!--Сумма НДС (15.2 цифры)-->
+		<TAXSUMREAL>00.00</TAXSUMREAL>
+		<!--Сбор (15.2 цифры)-->
+		<FEESUMREAL>00.00</FEESUMREAL>
+	</ZFORMSUMREAL>
+	
+<!--Повернення-->
+	<ZFORMSUMRETUNRN>
+        	<ZFORMTURNOVERRET>		
+			<ROW ROWNUM="1">
+				<!--обіг (64символа, обязательный)-->
+				<TURNOVERNAMERET>Обіг А</TURNOVERNAMERET>
+				<!--сума по обігу (15.2 цифры)-->
+				<TURNOVERTOTALRET>00.00</TURNOVERTOTALRET>
+			</ROW>	
+        	</ZFORMTURNOVERRET>		
+        	<ZFORMTAXRET>		
+			<ROW ROWNUM="1">
+				<!--ставка ПДВ (64символа, обязательный)-->
+				<TAXNAMERET>ПДВ А=0%</TAXNAMERET>
+				<!--сума ПДВ (15.2 цифры)-->
+				<TAXTOTALRET>00.00</TAXTOTALRET>
+			</ROW>	
+        	</ZFORMTAXRET>		
+		<!--Сумма оборота (15.2 цифры)-->
+		<TOTALSUMRET>00.00</TOTALSUMRET>
+		<!--Сумма НДС (15.2 цифры)-->
+		<TAXSUMRET>00.00</TAXSUMRET>
+		<!--Сбор (15.2 цифры)-->
+		<FEESUMRET>00.00</FEESUMRET>
+	</ZFORMSUMRETUNRN>
+			
+	<ZFORMBODY>
+		<!--Служебный взнос (15.2 цифры)-->
+		<SERVICEINPUT>00.00</SERVICEINPUT>
+		<!--Служебная выдача (15.2 цифры)-->
+		<SERVICEOUTPUT>00.00</SERVICEOUTPUT>
+	
+		<!--Количество чеков (5 цифр)-->
+		<ORDERCOUNT>0</ORDERCOUNT>
+		<!--Количество расходных чеков (5 цифр)-->
+		<ORDEREXPCOUNT>0</ORDEREXPCOUNT>
+		<!--Последний чек (5 цифр)-->
+		<ORDERLAST>0</ORDERLAST>
+
+		<!--Отчет нулевано(1 цифра)-->
+		<REPORTZERO>0</REPORTZERO>
+	</ZFORMBODY>
+
+</ZFORM>

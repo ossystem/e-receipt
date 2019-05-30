@@ -1,0 +1,98 @@
+<div class="container">
+
+    <p class="text-center"><?php echo $check["ZFORMHEAD"]["POINTNAME"]; ?></p>
+    <p class="text-center"><?php echo $check["ZFORMHEAD"]["POINTADDR"]; ?></p>
+    <p class="text-center"> ЕДРПОУ/ДРФО: <?php echo $check["ZFORMHEAD"]["TIN"]; ?></p>
+    <p class="text-center"> <b>Z-отчёт</b> </p>
+    <p class="text-center"> Отчёт оператора </p>
+
+    <ul class="list-group">
+            <li class="list-group-item">
+                <p class="text-center">Сумма оплаты реализации</p>
+                <ul class="list-unstyled">
+                    <?php foreach($check["ZFORMPAY"]["ZFORMREALIZ"] as $k=>$row): ?>
+                        <li><span><?php echo $row["FORMPAYREAL"]; ?></span> <span class="pull-right"><?php echo $row["SUMPAYREAL"]; ?></span></li>
+                    <?php endforeach; ?>
+                    <li><b>Сумма </b> <span class="pull-right"><?php echo $check["ZFORMPAY"]["SUMREAL"]; ?></span></li>
+                </ul>
+            </li>
+            <li class="list-group-item">
+                <p class="text-center">Сумма оплаты возврата</p>
+                <ul class="list-unstyled">
+                    <?php foreach($check["ZFORMPAY"]["ZFORMRETURN"] as $k=>$row): ?>
+                        <li><span><?php echo $row["FORMPAYRET"]; ?></span> <span class="pull-right"><?php echo $row["SUMPAYRET"]; ?></span></li>
+                    <?php endforeach; ?>
+                    <li><b>Сумма </b> <span class="pull-right"><?php echo $check["ZFORMPAY"]["SUMRET"]; ?></span></li>
+                </ul>
+            </li>
+            <li class="list-group-item">
+                <p class="text-center">Сумма продаж по налогам</p>
+                <ul class="list-unstyled">
+                    <li><span>Оборот</span></li>
+                    <li>
+                        <ul class="list-unstyled ml-4">
+                            <?php foreach($check["ZFORMSUMREAL"]["ZFORMTURNOVER"] as $k=>$row): ?>
+                                <li><span><?php echo $row["TURNOVERNAME"]; ?></span> <span class="pull-right"><?php echo $row["TURNOVERTOTAL"]; ?></span></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
+                    <li><span>Налог</span></li>
+                    <li>
+                        <ul class="list-unstyled ml-4">
+                            <?php foreach($check["ZFORMSUMREAL"]["ZFORMTAX"] as $k=>$row): ?>
+                                <li><span><?php echo $row["TAXNAME"]; ?></span> <span class="pull-right"><?php echo $row["TAXTOTAL"]; ?></span></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
+                    <li><b>Сумма</b></li>
+                    <li>
+                        <ul class="list-unstyled ml-4">
+                            <li><span>Оборот</span> <span class="pull-right"><?php echo $check["ZFORMSUMREAL"]["TOTALSUMREAL"]; ?></span></li>
+                            <li><span>НДС</span> <span class="pull-right"><?php echo $check["ZFORMSUMREAL"]["TAXSUMREAL"]; ?></span></li>
+                            <li><span>Сбор</span> <span class="pull-right"><?php echo $check["ZFORMSUMREAL"]["FEESUMREAL"]; ?></span></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item">
+                <p class="text-center">Сумма возврата по налогам</p>
+                <ul class="list-unstyled">
+                    <li><span>Оборот</span></li>
+                    <li>
+                        <ul class="list-unstyled ml-4">
+                            <?php foreach($check["ZFORMSUMRETUNRN"]["ZFORMTURNOVERRET"] as $k=>$row): ?>
+                                <li><span><?php echo $row["TURNOVERNAMERET"]; ?></span> <span class="pull-right"><?php echo $row["TURNOVERTOTALRET"]; ?></span></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
+                    <li><span>Налог</span></li>
+                    <li>
+                        <ul class="list-unstyled ml-4">
+                            <?php foreach($check["ZFORMSUMRETUNRN"]["ZFORMTAXRET"] as $k=>$row): ?>
+                                <li><span><?php echo $row["TAXNAMERET"]; ?></span> <span class="pull-right"><?php echo $row["TAXTOTALRET"]; ?></span></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
+                    <li><b>Сумма</b></li>
+                    <li>
+                        <ul class="list-unstyled ml-4">
+                            <li><span>Оборот</span> <span class="pull-right"><?php echo $check["ZFORMSUMRETUNRN"]["TOTALSUMRET"]; ?></span></li>
+                            <li><span>НДС</span> <span class="pull-right"><?php echo $check["ZFORMSUMRETUNRN"]["TAXSUMRET"]; ?></span></li>
+                            <li><span>Сбор</span> <span class="pull-right"><?php echo $check["ZFORMSUMRETUNRN"]["FEESUMRET"]; ?></span></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item">
+                <ul class="list-unstyled">
+                    <li><span>Служебный взнос</span> <span class="pull-right"><?php echo $check["ZFORMBODY"]["SERVICEINPUT"]; ?></span></li>
+                    <li><span>Служебная выдача</span> <span class="pull-right"><?php echo $check["ZFORMBODY"]["SERVICEOUTPUT"]; ?></span></li>
+                    <li><span>Количество налоговых чеков</span> <span class="pull-right"><?php echo $check["ZFORMBODY"]["ORDERCOUNT"]; ?></span></li>
+                    <li><span>Количество расходных чеков</span> <span class="pull-right"><?php echo $check["ZFORMBODY"]["ORDEREXPCOUNT"]; ?></span></li>
+                    <li><span>Последний чек</span> <span class="pull-right"><?php echo $check["ZFORMBODY"]["ORDEREXPCOUNT"]; ?></span></li>
+                    <li><span>Отчет нулевано</span> <span class="pull-right"><?php echo $check["ZFORMBODY"]["REPORTZERO"]; ?></span></li>
+                </ul>
+            </li>
+    </ul>
+
+</div>

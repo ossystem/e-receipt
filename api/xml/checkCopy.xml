@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<CHECK xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="check01.xsd">
+	<!--Обязательная непустая часть-->
+	<CHECKHEAD>
+		<!--Тип документа(Числовой, обязательный): 0-Фіскальний чек, 1-Відкриття зміни, 2-Закриття зміни-->
+		<DOCTYPE>0</DOCTYPE>
+		<!--Расширенный тип документа(Числовой, обязательный)-->
+		<!--Для DOCTYPE=0: 0-Касовий чек на товари (послуги), 1-Видатковий чек, 2-Чек операції «службове внесення», 3-Чек операції «службова видача»-->
+		<!--Для DOCTYPE!=0: 0-->
+		<DOCSUBTYPE>0</DOCSUBTYPE>
+		<!--Версия документа (Числовой, обязательный)-->
+		<VER>1</VER>
+		<!--Уникальный идентификатор документа (GUID, обязательный)-->
+		<UID>65CE5D3E05B400A0E053C0A8016D7FEE</UID>
+		<!--ЕДРПОУ/ДРФО/№ паспорта продавца (10 символов, обязательный)-->
+		<TIN>1010101017</TIN>
+		<!--ИНН продавца (12 символов, необязательный)-->
+		<INN>123456789012</INN>
+		<!--Наименование продавца (256 символов, обязательный)-->
+		<ORGNAME>КIОСК</ORGNAME>
+		<!--Наименование точки продаж (256 символов, обязательный)-->
+		<POINTNAME>КIОСК</POINTNAME>
+		<!--Адрес точки продаж (256 символов, обязательный)-->
+		<POINTADDR>УКРАЇНА, ЧЕРНIВЕЦЬКА ОБЛАСТЬ, М.НОВОДНІСТРОВСЬК апр</POINTADDR>
+		<!--Дата операции (ддммгггг, обязательный)-->
+		<ORDERDATE>30052019</ORDERDATE>
+		<!--Время операции (ччммсс, обязательный)-->
+		<ORDERTIME>171138</ORDERTIME>
+		<!--Порядковый номер документа (128 символов, обязательный)-->
+		<ORDERNUM>1639</ORDERNUM>
+		<!--Фискальный номер документа (128 символов, необязательный)-->
+		<ORDERTAXNUM>101234567890123</ORDERTAXNUM>
+		<!--Номер кассы (64 символа, обязательный)-->
+		<CASHDESKNUM>1</CASHDESKNUM>
+		<!--Фискальный номер регистратора расчётных операций (128 символов, необязательный)-->
+		<CASHREGISTERNUM>7000000322</CASHREGISTERNUM>
+		<!--ФИО кассира (128 символов, обязательный)-->
+		<CASHIER>Семко А.М.</CASHIER>
+	</CHECKHEAD>
+
+	<CHECKTOTAL>
+		<!--Итоговая сумма (15.2 цифры, необязательный)-->
+		<TOTALSUM>292.00</TOTALSUM>
+	</CHECKTOTAL>
+
+	<CHECKPAY>
+	<ROW ROWNUM="1"><PAYMENTFORM>Наличные</PAYMENTFORM><SUM>212.00</SUM></ROW></CHECKPAY>
+
+	<CHECKTAX>
+	<ROW ROWNUM="1"><TAXCODE>A</TAXCODE><TAXPRC>20.00</TAXPRC><TAXSUM>80.00</TAXSUM></ROW></CHECKTAX>
+
+	<CHECKEXCISE>
+	</CHECKEXCISE>
+
+	<CHECKBODY>
+
+	<ROW ROWNUM="1"><CODE>ewrwerwe</CODE><UKTZED>sdfs</UKTZED><NAME>rwerwerwe</NAME><UNITCODE>7</UNITCODE><UNITNAME>грн</UNITNAME><AMOUNT>3</AMOUNT><PRICE>19.00</PRICE><LETTER>A</LETTER><LETTEREXCISE>B</LETTEREXCISE><COST>57.00</COST></ROW><ROW ROWNUM="2"><CODE>ewrwerwe</CODE><UKTZED>sdfs</UKTZED><NAME>rwerwerwe</NAME><UNITCODE>5</UNITCODE><UNITNAME>грн</UNITNAME><AMOUNT>5</AMOUNT><PRICE>19.00</PRICE><LETTER>A</LETTER><LETTEREXCISE>B</LETTEREXCISE><COST>95.00</COST></ROW><ROW ROWNUM="3"><CODE>code1</CODE><UKTZED>uktz1</UKTZED><NAME>Item1</NAME><UNITCODE>46</UNITCODE><UNITNAME>грн</UNITNAME><AMOUNT>3</AMOUNT><PRICE>20.00</PRICE><LETTER>A</LETTER><LETTEREXCISE>B</LETTEREXCISE><COST>60.00</COST></ROW></CHECKBODY>
+</CHECK>

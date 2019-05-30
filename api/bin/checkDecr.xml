@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<CHECK xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="check01.xsd">
+  <!--������������ �������� �����-->
+  <CHECKHEAD>
+    <!--��� ���������(��������, ������������): 0-Գ�������� ���, 1-³������� ����, 2-�������� ����-->
+    <DOCTYPE>0</DOCTYPE>
+    <!--����������� ��� ���������(��������, ������������)-->
+    <!--��� DOCTYPE=0: 0-������� ��� �� ������ (�������), 1-���������� ���, 2-��� �������� ��������� ���������, 3-��� �������� ��������� ������-->
+    <!--��� DOCTYPE!=0: 0-->
+    <DOCSUBTYPE>0</DOCSUBTYPE>
+    <!--������ ��������� (��������, ������������)-->
+    <VER>1</VER>
+    <!--���������� ������������� ��������� (GUID, ������������)-->
+    <UID>65CE5D3E05B400A0E053C0A8016D7FEE</UID>
+    <!--������/����/� �������� �������� (10 ��������, ������������)-->
+    <TIN>1010101017</TIN>
+    <!--��� �������� (12 ��������, ��������������)-->
+    <INN>123456789012</INN>
+    <!--������������ �������� (256 ��������, ������������)-->
+    <ORGNAME>�I���</ORGNAME>
+    <!--������������ ����� ������ (256 ��������, ������������)-->
+    <POINTNAME>�I���</POINTNAME>
+    <!--����� ����� ������ (256 ��������, ������������)-->
+    <POINTADDR>�������, ����I������ �������, �.�����Ͳ�������� ���</POINTADDR>
+    <!--���� �������� (��������, ������������)-->
+    <ORDERDATE>30052019</ORDERDATE>
+    <!--����� �������� (������, ������������)-->
+    <ORDERTIME>171138</ORDERTIME>
+    <!--���������� ����� ��������� (128 ��������, ������������)-->
+    <ORDERNUM>1639</ORDERNUM>
+    <!--���������� ����� ��������� (128 ��������, ��������������)-->
+    <!--����� ����� (64 �������, ������������)-->
+    <CASHDESKNUM>1</CASHDESKNUM>
+    <!--���������� ����� ������������ ��������� �������� (128 ��������, ��������������)-->
+    <CASHREGISTERNUM>7000000322</CASHREGISTERNUM>
+    <!--��� ������� (128 ��������, ������������)-->
+    <CASHIER>����� �.�.</CASHIER>
+    <ORDERTAXNUM>34059</ORDERTAXNUM>
+  </CHECKHEAD>
+  <CHECKTOTAL>
+    <!--�������� ����� (15.2 �����, ��������������)-->
+    <TOTALSUM>292.00</TOTALSUM>
+  </CHECKTOTAL>
+  <CHECKPAY>
+    <ROW ROWNUM="1">
+      <PAYMENTFORM>��������</PAYMENTFORM>
+      <SUM>212.00</SUM>
+    </ROW>
+  </CHECKPAY>
+  <CHECKTAX>
+    <ROW ROWNUM="1">
+      <TAXCODE>A</TAXCODE>
+      <TAXPRC>20.00</TAXPRC>
+      <TAXSUM>80.00</TAXSUM>
+    </ROW>
+  </CHECKTAX>
+  <CHECKEXCISE>
+  </CHECKEXCISE>
+  <CHECKBODY>
+    <ROW ROWNUM="1">
+      <CODE>ewrwerwe</CODE>
+      <UKTZED>sdfs</UKTZED>
+      <NAME>rwerwerwe</NAME>
+      <UNITCODE>7</UNITCODE>
+      <UNITNAME>���</UNITNAME>
+      <AMOUNT>3</AMOUNT>
+      <PRICE>19.00</PRICE>
+      <LETTER>A</LETTER>
+      <LETTEREXCISE>B</LETTEREXCISE>
+      <COST>57.00</COST>
+    </ROW>
+    <ROW ROWNUM="2">
+      <CODE>ewrwerwe</CODE>
+      <UKTZED>sdfs</UKTZED>
+      <NAME>rwerwerwe</NAME>
+      <UNITCODE>5</UNITCODE>
+      <UNITNAME>���</UNITNAME>
+      <AMOUNT>5</AMOUNT>
+      <PRICE>19.00</PRICE>
+      <LETTER>A</LETTER>
+      <LETTEREXCISE>B</LETTEREXCISE>
+      <COST>95.00</COST>
+    </ROW>
+    <ROW ROWNUM="3">
+      <CODE>code1</CODE>
+      <UKTZED>uktz1</UKTZED>
+      <NAME>Item1</NAME>
+      <UNITCODE>46</UNITCODE>
+      <UNITNAME>���</UNITNAME>
+      <AMOUNT>3</AMOUNT>
+      <PRICE>20.00</PRICE>
+      <LETTER>A</LETTER>
+      <LETTEREXCISE>B</LETTEREXCISE>
+      <COST>60.00</COST>
+    </ROW>
+  </CHECKBODY>
+</CHECK>

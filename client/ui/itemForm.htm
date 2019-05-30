@@ -1,0 +1,96 @@
+<form class="col-md-6 form" action="/items/<?php echo ($action=='update'?$item->id.'/':'').$action; ?>" method="post">
+
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="code">Код:</label>
+        <div class="col-sm-9">
+            <input type="text" name="params[:code]" value="<?php echo $item?$item->code:''; ?>" class="form-control" id="code">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="title">Наименование:</label>
+        <div class="col-sm-9">
+            <input type="text" name="params[:title]" value="<?php echo $item?$item->title:''; ?>" class="form-control" id="title">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="price">Цена (грн):</label>
+        <div class="col-sm-9">
+            <input type="text" name="params[:price]" value="<?php echo $item?$item->price:''; ?>" class="form-control" id="price">
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="code_uktz">Код по УКТЗЕД:</label>
+        <div class="col-sm-9">
+            <input type="text" name="params[:code_uktz]" value="<?php echo $item?$item->code_uktz:''; ?>" class="form-control" id="code_uktz">
+        </div>
+    </div>
+
+    <hr/>
+
+    <h4>Единица измерения</h4>
+
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="em_code">Код:</label>
+        <div class="col-sm-9">
+            <input type="text" name="params[:em_code]" value="<?php echo $item?$item->em_code:''; ?>" class="form-control" id="em_code">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="em_title">Наименование:</label>
+        <div class="col-sm-9">
+            <input type="text" name="params[:em_title]" value="<?php echo $item?$item->em_title:''; ?>" class="form-control" id="em_title">
+        </div>
+    </div>
+
+    <hr/>
+
+    <h4>ПДВ</h4>
+
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="pdv_litera">Литера:</label>
+        <div class="col-sm-9">
+            <input type="text" name="params[:pdv_litera]" value="<?php echo $item?$item->pdv_litera:''; ?>" class="form-control" id="pdv_litera">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="pdv_stavka">Ставка(%):</label>
+        <div class="col-sm-9">
+            <input type="text" name="params[:pdv_stavka]" value="<?php echo $item?$item->pdv_stavka:''; ?>" class="form-control" id="pdv_stavka">
+        </div>
+    </div>
+
+    <hr/>
+
+    <h4>Акцизный сбор</h4>
+
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="action_litera">Литера:</label>
+        <div class="col-sm-9">
+            <input type="text" name="params[:action_litera]" value="<?php echo $item?$item->action_litera:''; ?>" class="form-control" id="action_litera">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label" for="action_stavka">Ставка(%):</label>
+        <div class="col-sm-9">
+            <input type="text" name="params[:action_stavka]" value="<?php echo $item?$item->action_stavka:''; ?>" class="form-control" id="action_stavka">
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="form-group">
+        <input type="submit" class="btn btn-success" value="Сохранить"/>
+        <?php if($action=='update'): ?>
+            <a class="btn btn-danger pull-right" href="/items/<?php echo $item->id; ?>/remove" class="btn-floating btn-lg float-right">Удалить</a>
+        <?php endif;?>
+    </div>
+
+</form>

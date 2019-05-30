@@ -1,0 +1,7 @@
+<ul class="list-group">
+    <?php foreach($items as $key=>$item): ?>
+        <li class="list-group-item"><a href="/items/<?php echo $item->id ?>/update"> <?php echo $item->title; ?></a><span class="pull-right"><?php echo $item->price; ?></span></li>
+    <?php endforeach; ?>
+</ul>
+
+<a href="/items/add" class="btn-floating btn-lg float-right">Добавить</a>

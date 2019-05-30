@@ -1,0 +1,42 @@
+<div class="container">
+
+    <p class="text-center"><?php echo $check["CHECKHEAD"]["POINTNAME"]; ?></p>
+    <p class="text-center"><?php echo $check["CHECKHEAD"]["POINTADDR"]; ?></p>
+    <p class="text-center"> ЕДРПОУ/ДРФО: <?php echo $check["CHECKHEAD"]["TIN"]; ?></p>
+    <p class="text-center"> Налоговый номер: <?php echo $check["CHECKHEAD"]["ORDERTAXNUM"]; ?></p>
+
+    <ul class="list-group">
+        <?php foreach($check["CHECKBODY"]["ROW"] as $k=>$row): ?>
+            <li class="list-group-item">
+                <ul class="list-unstyled">
+                    <li><span>Код УКТЗЕД: <?php echo $row["UKTZED"]; ?></span></li>
+                    <li><span>Арт: <?php echo $row["CODE"]; ?></span></li>
+                    <li>
+                        <span class="pull-left"><?php echo $row["NAME"]; ?>. <?php echo $row["AMOUNT"]; ?> X <?php echo $row["PRICE"]; ?> </span>
+                        <span class="pull-right"><?php echo ($row["PRICE"] * $row["AMOUNT"]); ?> <?php echo $row["UNITNAME"]; ?></span>
+                    </li>
+                </ul>
+            </li>
+        <?php endforeach; ?>
+        <li class="list-group-item">
+            <ul class="list-unstyled">
+                <li><b>Сумма, грн:</b><span class="pull-right"><?php echo $check["CHECKTOTAL"]["TOTALSUM"]; ?></span></li>
+                <!--<li><b>ПДВ, i:</b><span class="pull-right"><?php echo $check["CHECKTAX"]["ROW"]; ?></span></li>-->
+                <!--<li><span>Арт: <?php echo $row["CODE"]; ?></span></li>-->
+                <!--<li>-->
+                    <!--<span class="pull-left"><?php echo $row["NAME"]; ?>. <?php echo $row["AMOUNT"]; ?> X <?php echo $row["PRICE"]; ?> </span>-->
+                    <!--<span class="pull-right"><?php echo ($row["PRICE"] * $row["AMOUNT"]); ?> <?php echo $row["UNITNAME"]; ?></span>-->
+                <!--</li>-->
+            </ul>
+        </li>
+        <li class="list-group-item">
+            <span>Наличные:</span>
+            <span class="pull-right"><?php echo $check["CHECKTOTAL"]["TOTALSUM"]; ?></span>
+        </li>
+    </ul>
+
+    <p class="text-center"><?php echo $date; ?></p>
+    <p class="text-center"><b>Налоговый чек</b></p>
+
+    <!--<?php var_dump($check); ?>-->
+</div>

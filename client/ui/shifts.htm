@@ -1,0 +1,33 @@
+<ul class="list-group">
+    <?php foreach($shifts as $key => $shift): ?>
+        <li class="list-group-item text-center btn-success">
+            <h4 >Смена <?php echo date_format(date_create($shift->Opened), "d.m.Y"); ?></h4>
+            <!--<a href="/items/<?php echo $item->id ?>/update">-->
+                <!--<?php echo $item->title; ?>-->
+            <!--</a>-->
+        </li>
+        <?php foreach($shift->documents as $key1 => $doc): ?>
+            <li class="list-group-item">
+                <a class="btn btn-block btn-light" href="/<?php echo $guid; ?>/cash/<?php echo $id; ?>/shifts/<?php if($doc->DocType == 'ZForm'){ echo 'zform'; }elseif($doc->DocType == 'Check'){ echo 'check'; } ?>/<?php echo $doc->NumFiscal; ?>">
+                    № <?php echo $doc->NumFiscal ?>
+                    <?php switch ($doc->DocType){
+                            case 'ZForm': echo 'Z-отчёт';
+                                break;
+                            case 'Check': {
+                                switch($doc->CheckDocType){
+                                    case 'OpenShift': echo 'Открытие смены';
+                                        break;
+                                    case 'CloseShift': echo 'Закрытие смены';
+                                        break;
+                                    default: echo 'Продажа товара';
+                                        break;
+                                }
+                            }
+                                break;
+                         }
+                    ?>
+                </a>
+            </li>
+        <?php endforeach; ?>
+    <?php endforeach; ?>
+</ul>

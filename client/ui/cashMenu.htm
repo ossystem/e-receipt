@@ -1,0 +1,10 @@
+<ul class="list-group">
+    <?php if($cash->State>0):?>
+        <li class="list-group-item"><a href="/<?php echo $guid; ?>/cash/<?php echo $id; ?>/ticket/new">Новый чек</a></li>
+        <li class="list-group-item"><a href="/<?php echo $guid; ?>/cash/<?php echo $id; ?>/shift/close">Закрыть смену</a></li>
+        <li class="list-group-item"><a href="/<?php echo $guid; ?>/cash/<?php echo $id; ?>/shifts">Журнал</a></li>
+    <?php else:?>
+        <li class="list-group-item"><a href="/<?php echo $guid; ?>/cash/<?php echo $id; ?>/shift/open">Открыть смену</a></li>
+        <li class="list-group-item"><a href="/<?php echo $guid; ?>/cash/<?php echo $id; ?>/shifts">Журнал</a></li>
+    <?php endif;?>
+</ul>

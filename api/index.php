@@ -1,6 +1,6 @@
 <?php
 
-header('Content-Type: application/json; charset=windows-1251');
+//header('Content-Type: application/json; charset=windows-1251');
 
 require "./Helpers/XMLHelper.php";
 require "./Helpers/CurlHelper.php";
@@ -45,16 +45,29 @@ switch($_POST['Command']) {
         break;
     case 'Check':
     {
-        $params = json_decode(iconv("UTF-8", "CP1251", $_POST['params'])/*, TRUE*/);
+        $params = json_decode($_POST['params']/*, TRUE*/);
 
         $xml = XMLHelper::makeCheckXML($params);
+
+        file_put_contents("./bin/checkRaw11.xml", $xml);
 //        $return = $xml;
         $return = CurlHelper::sign($xml);
+
+//        $return = iconv("UTF-8", "windows-1251", $return);
+
+        file_put_contents("./bin/checkRaw22.xml", $return);
+
         if(!$return['error'])
             $return = CurlHelper::getCurlResponse($return, "doc");
 
+        file_put_contents("./bin/checkRaw33.xml", $return);
+
+//        $return = iconv("windows-1251", "UTF-8", $return);
+
         if(!$return['error'])
             $return = CurlHelper::decrypt($return);
+
+        file_put_contents("./bin/checkRaw34.xml", $return);
 
         echo $return;
 

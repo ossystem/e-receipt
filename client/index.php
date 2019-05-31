@@ -9,12 +9,13 @@ use models\ItemListModel;
 
 $f3->set('DEBUG',1);
 if ((float)PCRE_VERSION<7.9)
-	trigger_error('PCRE version is out of date');
+    trigger_error('PCRE version is out of date');
 
 
 // Load configuration
 $f3->config('config.ini');
 
+//header('Content-Type: text/html; charset=windows-1251');
 
 function getCurlResponse($params){
 
@@ -37,7 +38,7 @@ function getObjectByGUID($guid){
 
 
 $f3->route('GET /',
-	function($f3) {
+    function($f3) {
 //		$classes=array(
 //			'Base'=>
 //				array(
@@ -108,9 +109,9 @@ $f3->route('GET /',
         $f3->set('isMain', true);
         $f3->set('title', "Точки продаж");
         $f3->set('taxObjects', $obj->TaxObjects);
-		$f3->set('content','main.htm');
-		echo View::instance()->render('layout.htm');
-	}
+        $f3->set('content','main.htm');
+        echo View::instance()->render('layout.htm');
+    }
 );
 
 
@@ -336,8 +337,8 @@ $f3->route('GET /@guid/cash/@id/shift/close',
                 "ZFORMSUMRETUNRN" =>[
                     "ZFORMTURNOVERRET" => [
                         [
-                           "TURNOVERNAMERET" => "Обіг А",
-                           "TURNOVERTOTALRET" => "00.00",
+                            "TURNOVERNAMERET" => "Обіг А",
+                            "TURNOVERTOTALRET" => "00.00",
                         ]
                     ],
                     "ZFORMTAXRET" => [
@@ -476,30 +477,30 @@ $f3->route('GET /testxml',
                 'CASHIER' => 'Семко А.М.'
             ],
             "CHECKBODY" => [
-                    [
-                        "CODE" => "777",
-                        "UKTZED" => "777",
-                        "NAME" => "NAME",
-                        "UNITCODE" => "yyy",
-                        "UNITNAME" => "title",
-                        "AMOUNT" => 20,
-                        "PRICE" => number_format(20, 2),
-                        "LETTER" => "A",
-                        "LETTEREXCISE" => "a1",
-                        "COST" => number_format(10, 2)
-                    ],
-                    [
-                        "CODE" => "888",
-                        "UKTZED" => "777",
-                        "NAME" => "NAME",
-                        "UNITCODE" => "yyy",
-                        "UNITNAME" => "title",
-                        "AMOUNT" => 20,
-                        "PRICE" => number_format(20, 2),
-                        "LETTER" => "A",
-                        "LETTEREXCISE" => "a1",
-                        "COST" => number_format(10, 2)
-                    ],
+                [
+                    "CODE" => "777",
+                    "UKTZED" => "777",
+                    "NAME" => "NAME",
+                    "UNITCODE" => "yyy",
+                    "UNITNAME" => "title",
+                    "AMOUNT" => 20,
+                    "PRICE" => number_format(20, 2),
+                    "LETTER" => "A",
+                    "LETTEREXCISE" => "a1",
+                    "COST" => number_format(10, 2)
+                ],
+                [
+                    "CODE" => "888",
+                    "UKTZED" => "777",
+                    "NAME" => "NAME",
+                    "UNITCODE" => "yyy",
+                    "UNITNAME" => "title",
+                    "AMOUNT" => 20,
+                    "PRICE" => number_format(20, 2),
+                    "LETTER" => "A",
+                    "LETTEREXCISE" => "a1",
+                    "COST" => number_format(10, 2)
+                ],
             ]
         ];
 
@@ -594,39 +595,26 @@ $f3->route('GET /@guid/cash/@cashid/shifts/check/@id',
         ]);
 
 //        header('Content-Type: text/html; charset=windows-1251');
+        header('Content-Type: text/html; charset=UTF-8');
 
         $xml = new \SimpleXMLElement($check);
-//        var_dump($xml->CHECKTOTAL);
 
-//        $datetime = new DateTime();
-//        $dateFrom = new DateTime('-1 days');
-//
-//        $shifts = getCurlResponse([
-//            "Command" => "Shifts",
-//            "NumFiscal" => $id,
-//            "From" => $dateFrom->format("Y-m-d H:i:s"),
-//            "To" => $datetime->format("Y-m-d H:i:s")
-//        ]);
-//
-//        $datefrom = $dateFrom->format("Y-m-d H:i:s");
-//        $dateto = $datetime->format("Y-m-d H:i:s");
-//
-//        $shifts = json_decode($shifts);
-//
-//        foreach($shifts->Shifts as $k=> $v){
-//
-//            $documents = getCurlResponse([
-//                "Command" => "Documents",
-//                "ShiftId" => $v->ShiftId
-//            ]);
-//
-//            $docs = json_decode($documents);
-//
-//            $v->documents = array_reverse($docs->Documents);
-//        }
-//
+        //var_dump($xml->asXML());
 
-        $check = json_decode(json_encode($xml), TRUE);
+        $check = json_decode(mb_convert_encoding(json_encode($xml, JSON_UNESCAPED_UNICODE),"windows-1251","UTF-8"), TRUE);
+
+//        file_put_contents("./json/XML111.xml",$xml->asXML());
+//
+//        $p = xml_parser_create();
+//        xml_parse_into_struct($p, $xml->asXML(), $vals, $index);
+//        xml_parser_free($p);
+//        echo "Index array\n";
+//        print_r($index);
+//        echo "\nVals array\n";
+//        print_r($vals);
+//        var_dump($check);
+//
+//        die();
 
         $datestr = preg_replace("/(\d{2})(\d{2})(\d{4})/", "$1.$2.$3", $check["CHECKHEAD"]["ORDERDATE"]);
         $datestr.= " ". preg_replace("/(\d{2})(\d{2})(\d{2})/", "$1:$2:$3", $check["CHECKHEAD"]["ORDERTIME"]);
@@ -635,6 +623,7 @@ $f3->route('GET /@guid/cash/@cashid/shifts/check/@id',
         $f3->set('id', $id);
         $f3->set('guid', $guid);
         $f3->set("check", $check);
+        $f3->set("backHref", "/$guid/cash/$cashid/shifts/");
         $f3->set('content', 'check.htm');
         echo View::instance()->render('layout.htm');
 
@@ -751,12 +740,10 @@ $f3->route('GET /@guid/cash/@cashid/shifts/zform/@id',
             "NumFiscal" => $id,
         ]);
 
-//        var_dump($check);
-//        die();
         $xml = new \SimpleXMLElement($check);
 
-//        die();
-//        $f3->set('check', ["xml"=>$xml]);
+        $f3->set("id", $id);
+        $f3->set("backHref", "/$guid/cash/$cashid/shifts/");
         $f3->set("check", json_decode(json_encode($xml), TRUE));
         $f3->set('content', 'zform.htm');
         echo View::instance()->render('layout.htm');
@@ -799,7 +786,7 @@ $f3->route('GET|POST /@guid/cash/@id/ticket/item/add',
         $counts = $f3->POST['counts'];
 
         if($items){
-              //var_dump($f3->POST['items'], $f3->POST['counts']);
+            //var_dump($f3->POST['items'], $f3->POST['counts']);
             foreach($items as $k=>$v) {
                 ItemListModel::addItem([":guid" => "", ":item_id" => $k, ":count" => intval($counts[$k])]);
             }
@@ -867,46 +854,50 @@ $f3->route('GET|POST /@guid/cash/@id/ticket/fixal',
                 'CASHIER' => 'Семко А.М.'
             ]];
 
-            $total = 0;
-            foreach($items as $k=>$v){
-                $total += ($v->price * $v->count);
+        $total = 0;
+        foreach($items as $k=>$v){
+            $total += ($v->price * $v->count);
 
-                $params["CHECKBODY"][] = [
-                    "CODE" => $v->code,
-                    "UKTZED" => $v->code_uktz,
-                    "NAME" => $v->title,
-                    "UNITCODE" => $v->em_code,
-                    "UNITNAME" => $v->em_title,
-                    "AMOUNT" => $v->count,
-                    "PRICE" => number_format($v->price, 2),
-                    "LETTER" => $v->pdv_litera,
-                    "LETTEREXCISE" => $v->action_litera,
-                    "COST" => number_format(($v->price * $v->count), 2)
-                ];
-            }
-
-            $params["CHECKTOTAL"] = [
-                "TOTALSUM" => number_format((floatval($total) + 80),2)
+            $params["CHECKBODY"][] = [
+                "CODE" => $v->code,
+                "UKTZED" => $v->code_uktz,
+                "NAME" => $v->title,
+                "UNITCODE" => $v->em_code,
+                "UNITNAME" => $v->em_title,
+                "AMOUNT" => $v->count,
+                "PRICE" => number_format($v->price, 2),
+                "LETTER" => $v->pdv_litera,
+                "LETTEREXCISE" => $v->action_litera,
+                "COST" => number_format(($v->price * $v->count), 2)
             ];
 
-            $params["CHECKPAY"] = [
-                [
-                    "PAYMENTFORM" => "Наличные",
-                    "SUM" => number_format($total, 2)
-                ]
+            $params["CHECKEXCISE"][] = [
+                "EXCISECODE" => $v->action_litera,
+                "EXCISEPRC" => number_format($v->action_stavka, 2),
+                "EXCISESUM" => number_format((($v->price * $v->action_stavka) / (100 + $v->action_stavka)), 2)
             ];
 
-            $params["CHECKTAX"] = [
-                [
-                    "TAXCODE" => "A",
-                    "TAXPRC" => number_format(20.00, 2),
-                    "TAXSUM" => number_format(80.00, 2)
-                ]
+            $params["CHECKTAX"][] = [
+                "TAXCODE" => $v->pdv_litera,
+                "TAXPRC" => number_format($v->pdv_stavka, 2),
+                "TAXSUM" => number_format((($v->price /100) * $v->pdv_stavka), 2)
             ];
+        }
+
+        $params["CHECKTOTAL"] = [
+            "TOTALSUM" => number_format((floatval($total) + 80),2)
+        ];
+
+        $params["CHECKPAY"] = [
+            [
+                "PAYMENTFORM" => "Наличные",
+                "SUM" => number_format($total, 2)
+            ]
+        ];
 
         $responseCheck = getCurlResponse([
             "Command" => "Check",
-            "params" => json_encode($params)
+            "params" => json_encode($params, JSON_UNESCAPED_UNICODE)
         ]);
 
         $responseCheckXml = new \SimpleXMLElement($responseCheck);

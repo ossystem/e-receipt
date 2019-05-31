@@ -3,30 +3,45 @@
     <p class="text-center"><?php echo $check["CHECKHEAD"]["POINTNAME"]; ?></p>
     <p class="text-center"><?php echo $check["CHECKHEAD"]["POINTADDR"]; ?></p>
     <p class="text-center"> ЕДРПОУ/ДРФО: <?php echo $check["CHECKHEAD"]["TIN"]; ?></p>
-    <p class="text-center"> Налоговый номер: <?php echo $check["CHECKHEAD"]["ORDERTAXNUM"]; ?></p>
+    <p class="text-center"> Номер: <?php echo $check["CHECKHEAD"]["ORDERTAXNUM"]; ?></p>
 
+
+    <?php if($check["CHECKBODY"]): ?>
     <ul class="list-group">
-        <?php foreach($check["CHECKBODY"]["ROW"] as $k=>$row): ?>
-            <li class="list-group-item">
-                <ul class="list-unstyled">
-                    <li><span>Код УКТЗЕД: <?php echo $row["UKTZED"]; ?></span></li>
-                    <li><span>Арт: <?php echo $row["CODE"]; ?></span></li>
-                    <li>
-                        <span class="pull-left"><?php echo $row["NAME"]; ?>. <?php echo $row["AMOUNT"]; ?> X <?php echo $row["PRICE"]; ?> </span>
-                        <span class="pull-right"><?php echo ($row["PRICE"] * $row["AMOUNT"]); ?> <?php echo $row["UNITNAME"]; ?></span>
-                    </li>
-                </ul>
-            </li>
-        <?php endforeach; ?>
+        <?php if($check["CHECKBODY"]["ROW"][0]): ?>
+            <?php foreach($check["CHECKBODY"]["ROW"] as $k=>$row): ?>
+                <?php $row['UN']=$check["CHECKTAX"]["ROW"][$k]['TAXCODE'].$check["CHECKEXCISE"]["ROW"][$k]['EXCISECODE'];   include 'checkBodyRow.htm'; ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <?php
+                $row = $check["CHECKBODY"]["ROW"];
+                $row['UN']=$check["CHECKTAX"]["ROW"]['TAXCODE'].$check["CHECKEXCISE"]["ROW"]['EXCISECODE'];
+            ?>
+            <?php include 'checkBodyRow.htm'; ?>
+        <?php endif; ?>
+
         <li class="list-group-item">
             <ul class="list-unstyled">
                 <li><b>Сумма, грн:</b><span class="pull-right"><?php echo $check["CHECKTOTAL"]["TOTALSUM"]; ?></span></li>
-                <!--<li><b>ПДВ, i:</b><span class="pull-right"><?php echo $check["CHECKTAX"]["ROW"]; ?></span></li>-->
-                <!--<li><span>Арт: <?php echo $row["CODE"]; ?></span></li>-->
-                <!--<li>-->
-                    <!--<span class="pull-left"><?php echo $row["NAME"]; ?>. <?php echo $row["AMOUNT"]; ?> X <?php echo $row["PRICE"]; ?> </span>-->
-                    <!--<span class="pull-right"><?php echo ($row["PRICE"] * $row["AMOUNT"]); ?> <?php echo $row["UNITNAME"]; ?></span>-->
-                <!--</li>-->
+
+                <?php if($check["CHECKTAX"]["ROW"][0]): ?>
+                    <?php foreach($check["CHECKTAX"]["ROW"] as $k=>$row): ?>
+                        <?php include 'checkTaxRow.htm'; ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?php $row = $check["CHECKTAX"]["ROW"]; ?>
+                    <?php include 'checkTaxRow.htm'; ?>
+                <?php endif; ?>
+
+                <?php if($check["CHECKEXCISE"]["ROW"][0]): ?>
+                    <?php foreach($check["CHECKEXCISE"]["ROW"] as $k=>$row): ?>
+                        <?php include 'checkExciseRow.htm'; ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?php $row = $check["CHECKEXCISE"]["ROW"]; ?>
+                    <?php include 'checkExciseRow.htm'; ?>
+                <?php endif; ?>
+
             </ul>
         </li>
         <li class="list-group-item">
@@ -34,9 +49,17 @@
             <span class="pull-right"><?php echo $check["CHECKTOTAL"]["TOTALSUM"]; ?></span>
         </li>
     </ul>
+    <?php endif; ?>
 
     <p class="text-center"><?php echo $date; ?></p>
-    <p class="text-center"><b>Налоговый чек</b></p>
+    <?php if($check["CHECKHEAD"]["DOCTYPE"] == 0): ?>
+        <p class="text-center"><b>Налоговый чек</b></p>
+    <?php elseif($check["CHECKHEAD"]["DOCTYPE"] == 1): ?>
+        <p class="text-center"><b>Открытие смены</b></p>
+    <?php elseif($check["CHECKHEAD"]["DOCTYPE"] == 2): ?>
+        <p class="text-center"><b>Закрытие смены</b></p>
+    <?php endif; ?>
 
-    <!--<?php var_dump($check); ?>-->
+
 </div>
+<?php /*var_dump($check);*/ ?>

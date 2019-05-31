@@ -1,10 +1,12 @@
 <div class="container">
 
+    <?php var_dump($check); ?>
     <p class="text-center"><?php echo $check["ZFORMHEAD"]["POINTNAME"]; ?></p>
     <p class="text-center"><?php echo $check["ZFORMHEAD"]["POINTADDR"]; ?></p>
     <p class="text-center"> ЕДРПОУ/ДРФО: <?php echo $check["ZFORMHEAD"]["TIN"]; ?></p>
     <p class="text-center"> <b>Z-отчёт</b> </p>
-    <p class="text-center"> Отчёт оператора </p>
+    <p class="text-center"> Фиксальный номер: <?php echo $id; ?></p>
+    <p class="text-center pt-4"> Отчёт оператора </p>
 
     <ul class="list-group">
             <li class="list-group-item">

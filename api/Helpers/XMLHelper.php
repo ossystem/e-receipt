@@ -92,7 +92,13 @@ class XMLHelper{
 
 //        var_dump($xmlDoc);
 //        die();
-        file_put_contents("./xml/checkCopy.xml",$xmlDoc->asXML());
-        return file_get_contents("./xml/checkCopy.xml");
+        //file_put_contents("./xml/checkCopy.xml",$xmlDoc->asXML());
+        return /*file_get_contents("./xml/checkCopy.xml")*/$xmlDoc->asXML();
     }
+
+
+
+
+
+
 }

@@ -5,7 +5,7 @@
 		<title>Powered by <?php echo $PACKAGE; ?></title>
 		<base href="<?php echo $SCHEME.'://'.$HOST.':'.$PORT.$BASE.'/'; ?>" />
         <link rel="stylesheet" href="/ui/css/bootstrap.min.css" type="text/css" />
-        <meta http-equiv="content-type" content="text/html; charset=windows-1251">
+        <!--<meta http-equiv="content-type" content="text/html; charset=windows-1251">-->
 		<!--<link rel="stylesheet" href="lib/code.css" type="text/css" />-->
 		<!--<link rel="stylesheet" href="ui/css/base.css" type="text/css" />-->
 		<!--<link rel="stylesheet" href="ui/css/theme.css" type="text/css" />-->
@@ -14,7 +14,7 @@
         <div class="content">
         <ul class="list-group">
             <li class="list-group-item active">
-                <?php if(!$isMain): ?> <button class="btn btn-primary" onclick="window.history.back()">Назад</button> <?php endif; ?>
+                <?php if(!$isMain): ?> <button class="btn btn-primary" <?php if($backHref) :?> onClick="location.replace('<?php echo $backHref; ?>');" <?php else: ?> onclick="window.history.back()" <?php endif; ?> >Назад</button> <?php endif; ?>
                 <?php echo $title ?>
             </li>
         </ul>

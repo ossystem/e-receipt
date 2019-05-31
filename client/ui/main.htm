@@ -1,6 +1,9 @@
 <ul class="list-group">
   <?php foreach($taxObjects as $key=>$obj): ?>
-    <li class="list-group-item"><a href="/<?php echo $obj->Guid ?>/cashRegisters"><?php echo $obj->Name; ?></a></li>
+    <li class="list-group-item">
+        <p><a href="/<?php echo $obj->Guid ?>/cashRegisters"><?php echo $obj->Name; ?></a></p>
+        <p><?php echo $obj->Address; ?></p>
+    </li>
   <?php endforeach; ?>
 </ul>
     <!--<div id="accordion">-->

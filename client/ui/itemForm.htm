@@ -1,3 +1,7 @@
+<?php
+    use Helpers\FormatHelper;
+?>
+
 <form class="col-md-6 form" action="/items/<?php echo ($action=='update'?$item->id.'/':'').$action; ?>" method="post">
 
     <div class="form-group row">
@@ -8,16 +12,16 @@
     </div>
 
     <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="title">Наименование:</label>
+        <label class="col-sm-3 col-form-label" for="title">Найменування:</label>
         <div class="col-sm-9">
             <input type="text" name="params[:title]" value="<?php echo $item?$item->title:''; ?>" class="form-control" id="title">
         </div>
     </div>
 
     <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="price">Цена (грн):</label>
+        <label class="col-sm-3 col-form-label" for="price">Ціна (грн):</label>
         <div class="col-sm-9">
-            <input type="text" name="params[:price]" value="<?php echo $item?$item->price:''; ?>" class="form-control" id="price">
+            <input type="number" name="params[:price]" step="0.01" value="<?php echo $item ? FormatHelper::format_dec($item->price) :''; ?>" class="form-control" id="price">
         </div>
     </div>
 
@@ -32,7 +36,7 @@
 
     <hr/>
 
-    <h4>Единица измерения</h4>
+    <h4>Одиниця виміру</h4>
 
     <div class="form-group row">
         <label class="col-sm-3 col-form-label" for="em_code">Код:</label>
@@ -42,7 +46,7 @@
     </div>
 
     <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="em_title">Наименование:</label>
+        <label class="col-sm-3 col-form-label" for="em_title">Найменування:</label>
         <div class="col-sm-9">
             <input type="text" name="params[:em_title]" value="<?php echo $item?$item->em_title:''; ?>" class="form-control" id="em_title">
         </div>
@@ -53,7 +57,7 @@
     <h4>ПДВ</h4>
 
     <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="pdv_litera">Литера:</label>
+        <label class="col-sm-3 col-form-label" for="pdv_litera">Літера:</label>
         <div class="col-sm-9">
             <input type="text" name="params[:pdv_litera]" value="<?php echo $item?$item->pdv_litera:''; ?>" class="form-control" id="pdv_litera">
         </div>
@@ -68,10 +72,10 @@
 
     <hr/>
 
-    <h4>Акцизный сбор</h4>
+    <h4>Акцизний збір</h4>
 
     <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="action_litera">Литера:</label>
+        <label class="col-sm-3 col-form-label" for="action_litera">Літера:</label>
         <div class="col-sm-9">
             <input type="text" name="params[:action_litera]" value="<?php echo $item?$item->action_litera:''; ?>" class="form-control" id="action_litera">
         </div>
@@ -87,9 +91,9 @@
     <hr/>
 
     <div class="form-group">
-        <input type="submit" class="btn btn-success" value="Сохранить"/>
+        <input type="submit" class="btn btn-success" value="Зберігти"/>
         <?php if($action=='update'): ?>
-            <a class="btn btn-danger pull-right" href="/items/<?php echo $item->id; ?>/remove" class="btn-floating btn-lg float-right">Удалить</a>
+            <a class="btn btn-danger pull-right" href="/items/<?php echo $item->id; ?>/remove" class="btn-floating btn-lg float-right">Видалити</a>
         <?php endif;?>
     </div>
 

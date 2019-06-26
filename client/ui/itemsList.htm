@@ -1,25 +1,29 @@
+<?php
+    use Helpers\FormatHelper;
+?>
+
 <ul class="list-group">
     <?php foreach($items as $key=>$item): ?>
     <li class="list-group-item row">
         <div class="col col-sm-9">
             <p><?php echo $item->title; ?></p>
-            <p><?php echo $item->price. " грн. x " . $item->count ?></p>
+            <p><?php echo FormatHelper::format_dec($item->price). " грн. x " . $item->count ?></p>
         </div>
         <div class="col col-sm-3">
-            <span class="pull-right"><?php echo ($item->price * $item->count); ?></span>
+            <span class="pull-right"><?php echo FormatHelper::format_dec($item->price * $item->count); ?></span>
         </div>
-        <?php $total += ($item->price * $item->count); ?>
+        <?php $total += FormatHelper::format_dec($item->price * $item->count); ?>
     </li>
     <?php endforeach; ?>
     <li class="list-group-item">
-        <span class="pull-left"><b>Сумма</b></span>
-        <span class="pull-right"><?php echo $total ?></span>
+        <span class="pull-left"><b>Сума</b></span>
+        <span class="pull-right"><?php echo FormatHelper::format_dec($total) ?></span>
     </li>
     <li class="list-group-item">
-            <a href="/<?php echo $guid ?>/cash/<?php echo $id ?>/ticket/new" class="btn btn-danger mr-5">Удалить</a>
-            <a href="/<?php echo $guid ?>/cash/<?php echo $id ?>/ticket/item/select" class="btn btn-success">Добавить</a>
-            <form style="display:inline" action="/<?php echo $guid ?>/cash/<?php echo $id ?>/ticket/pay" method="post">
-                <input type="hidden" name="total" value="<?php echo $total ?>"/>
+            <a href="/<?php echo $guid ?>/cash/<?php echo $id ?>/ticket/<?php echo $type; ?>/new" class="btn btn-danger mr-5">Видалити</a>
+            <a href="/<?php echo $guid ?>/cash/<?php echo $id ?>/ticket/<?php echo $type; ?>/item/select" class="btn btn-success">Додати</a>
+            <form style="display:inline" action="/<?php echo $guid ?>/cash/<?php echo $id ?>/ticket/<?php echo $type; ?>/pay" method="post">
+                <input type="hidden" name="total" value="<?php echo FormatHelper::format_dec($total) ?>"/>
                 <button type="submit" class="btn btn-success float-right">Готово</button>
             </form>
     </li>

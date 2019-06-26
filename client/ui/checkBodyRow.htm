@@ -3,8 +3,8 @@
         <li><span>Код УКТЗЕД: <?php echo $row["UKTZED"]; ?></span></li>
         <li><span>Арт: <?php echo $row["CODE"]; ?></span></li>
         <li>
-            <span class="pull-left"><?php echo $row["NAME"]; ?>. <?php echo $row["AMOUNT"]; ?> X <?php echo $row["PRICE"]; ?> </span>
-            <span class="pull-right"><?php echo ($row["PRICE"] * $row["AMOUNT"]); ?> <?php echo $row["UN"]; ?></span>
+            <span class="pull-left"><?php echo $row["NAME"]; ?>. <?php echo $row["AMOUNT"]; ?> X <?php echo $row["PRICE"]." ".$row["UNITNAME"]; ?> </span>
+            <span class="pull-right"><?php echo number_format($row["PRICE"] * $row["AMOUNT"], 2); ?> <?php echo $row["UN"]; ?></span>
         </li>
     </ul>
 </li>

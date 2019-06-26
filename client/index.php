@@ -1,145 +1,75 @@
 <?php
 
-
+//$_SERVER['SERVER_NAME'] = "seleznyov9200.ossystem.ua";
 // Kickstart the framework
 $f3=require('lib/base.php');
 
 use models\ItemModel;
 use models\ItemListModel;
+use models\OrderItemsModel;
+use models\OrdersModel;
+use Helpers\FormatHelper;
+use Helpers\CurlHelper;
+use Helpers\CacheHelper;
 
+$f3->set('CACHE',FALSE);
+$cache = \Cache::instance();
+$cache->reset();
 $f3->set('DEBUG',1);
-if ((float)PCRE_VERSION<7.9)
+
+if ((float)PCRE_VERSION < 7.9)
     trigger_error('PCRE version is out of date');
 
 
 // Load configuration
 $f3->config('config.ini');
+libxml_use_internal_errors(true);
 
 //header('Content-Type: text/html; charset=windows-1251');
 
-function getCurlResponse($params){
-
-    $apiServerName = 'http://api.'.$_SERVER['SERVER_NAME']."";
-
-    $ch = curl_init($apiServerName);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $response = curl_exec($ch);
-    curl_close($ch);
-    return $response;
-}
-
-function getObjectByGUID($guid){
-    $obj = json_decode(file_get_contents("./json/responses/objects.json"));
-    $arr = array_shift(array_filter($obj->TaxObjects, function($v) use ($guid) {return $v->Guid == $guid;}));
-    return $arr;
-}
-
-
 $f3->route('GET /',
     function($f3) {
-//		$classes=array(
-//			'Base'=>
-//				array(
-//					'hash',
-//					'json',
-//					'session',
-//					'mbstring'
-//				),
-//			'Cache'=>
-//				array(
-//					'apc',
-//					'apcu',
-//					'memcache',
-//					'memcached',
-//					'redis',
-//					'wincache',
-//					'xcache'
-//				),
-//			'DB\SQL'=>
-//				array(
-//					'pdo',
-//					'pdo_dblib',
-//					'pdo_mssql',
-//					'pdo_mysql',
-//					'pdo_odbc',
-//					'pdo_pgsql',
-//					'pdo_sqlite',
-//					'pdo_sqlsrv'
-//				),
-//			'DB\Jig'=>
-//				array('json'),
-//			'DB\Mongo'=>
-//				array(
-//					'json',
-//					'mongo'
-//				),
-//			'Auth'=>
-//				array('ldap','pdo'),
-//			'Bcrypt'=>
-//				array(
-//					'openssl'
-//				),
-//			'Image'=>
-//				array('gd'),
-//			'Lexicon'=>
-//				array('iconv'),
-//			'SMTP'=>
-//				array('openssl'),
-//			'Web'=>
-//				array('curl','openssl','simplexml'),
-//			'Web\Geo'=>
-//				array('geoip','json'),
-//			'Web\OpenID'=>
-//				array('json','simplexml'),
-//			'Web\Pingback'=>
-//				array('dom','xmlrpc')
-//		);
-//		$f3->set('classes',$classes);
+        $obj = CacheHelper::responseCache(["Command" => "Objects"], "./json/responses/objects.json");
 
-        $response = getCurlResponse(["Command" => "Objects"]);
+        if($obj->error)
+            $f3->set('errors', [$obj->error]);
 
+            $f3->set('isMain', true);
+            $f3->set('title', "Точки продажу");
+            $f3->set('taxObjects', $obj->TaxObjects);
+            $f3->set('content', 'main.htm');
 
-        file_put_contents("./json/responses/objects.json", $response);
-
-        $obj = json_decode($response);
-
-        $f3->set('error', $obj->error);
-        $f3->set('isMain', true);
-        $f3->set('title', "Точки продаж");
-        $f3->set('taxObjects', $obj->TaxObjects);
-        $f3->set('content','main.htm');
         echo View::instance()->render('layout.htm');
     }
 );
-
-
 
 $f3->route('GET /@guid/cashRegisters',
     function($f3) {
         $guid = $f3->PARAMS['guid'];
 
-        $obj = getObjectByGUID($guid);
+        $obj = CacheHelper::getObjectByGUID($guid);
 
-        $f3->set('error', $obj->error);
-        $f3->set('title', "Кассы");
+        if($obj->error)
+            $f3->set('errors', [$obj->error]);
+        else {
+            $f3->set('cashRegisters', $obj->CashRegisters);
+            $f3->set('content', 'cashRegisters.htm');
+        }
+
+        $f3->set('title', "Каси");
         $f3->set('guid', $guid);
-        $f3->set('cashRegisters', $obj->CashRegisters);
-        $f3->set('content','cashRegisters.htm');
+        $f3->set("backHref", "/");
         echo View::instance()->render('layout.htm');
     }
 );
 
 $f3->route('GET /items',
     function($f3) {
-
         $items = ItemModel::get();
-        /*$obj = json_decode(file_get_contents('json/responses/objects.json'));
-        $arr = array_shift(array_filter($obj->TaxObjects, function($v) use ($f3) {return $v->Guid == $f3->PARAMS['id'];}));
-        $f3->set('panel', "cashRegisters");*/
-        $f3->set('title', "Номенклатура");
+
+        $f3->set('title', "Товари");
         $f3->set('items', $items);
+        $f3->set("backHref", "/");
         $f3->set('content','items.htm');
         echo View::instance()->render('layout.htm');
     }
@@ -148,16 +78,13 @@ $f3->route('GET /items',
 $f3->route('GET|POST /items/add',
     function($f3) {
 
-        /*$obj = json_decode(file_get_contents('json/responses/objects.json'));
-        $arr = array_shift(array_filter($obj->TaxObjects, function($v) use ($f3) {return $v->Guid == $f3->PARAMS['id'];}));
-        $f3->set('panel', "cashRegisters");*/
-//        $f3->set('items', $items);
         if($f3->POST['params']){
             ItemModel::addItem($f3->POST['params']);
             $f3->reroute('/items');
         } else {
-            $f3->set('title', "Добавить товар");
+            $f3->set('title', "Додати товар");
             $f3->set('action', 'add');
+            $f3->set("backHref", "/items");
             $f3->set('content', 'itemForm.htm');
             echo View::instance()->render('layout.htm');
         }
@@ -170,20 +97,14 @@ $f3->route('GET|POST /items/@id/update',
 
         $item = ItemModel::getById($id);
 
-
-        /*$obj = json_decode(file_get_contents('json/responses/objects.json'));
-        $arr = array_shift(array_filter($obj->TaxObjects, function($v) use ($f3) {return $v->Guid == $f3->PARAMS['id'];}));
-        $f3->set('panel', "cashRegisters");*/
-//        $f3->set('items', $items);
         if($f3->POST['params']){
-//            var_dump($f3->POST['params']);
-//            die();
             ItemModel::updateItem($id, $f3->POST['params']);
-            $f3->reroute();
+            $f3->reroute("/items");
         } else {
-            $f3->set('title', "Изменить товар");
+            $f3->set('title', "Змінити товар");
             $f3->set('action', 'update');
             $f3->set('item', $item);
+            $f3->set("backHref", "/items");
             $f3->set('content', 'itemForm.htm');
             echo View::instance()->render('layout.htm');
         }
@@ -204,43 +125,33 @@ $f3->route('GET /@guid/cash/@id',
         $id = $f3->PARAMS['id'];
         $guid = $f3->PARAMS['guid'];
 
-        $response = getCurlResponse([
+        $cash = CacheHelper::responseCache([
             "Command" => "CashRegisterState",
             "NumFiscal" => $id
-        ]);
+        ], "./json/responses/cash$id.json");
 
-        file_put_contents("./json/responses/cash$id.json", $response);
+        if($cash->error)
+            $f3->set('errors', [$cash->error]);
+        else{
+            $f3->set('cash', $cash);
+            $f3->set('content', 'cashMenu.htm');
+        }
 
-        $cash = json_decode($response);
-        $f3->set('error', $cash->error);
-        $f3->set('title', "Касса: ".($cash->State > 0 ? 'Смена открыта' : 'Смена закрыта'));
+        $f3->set('title', "Каса: ".($cash->State > 0 ? 'Зміна відкрита' : 'Зміна закрита'));
         $f3->set('id', $id);
         $f3->set('guid', $guid);
-        $f3->set('cash', $cash);
-        $f3->set('content', 'cashMenu.htm');
+        $f3->set("backHref", "/$guid/cashRegisters");
         echo View::instance()->render('layout.htm');
-//        ItemModel::remove($id);
-//        $f3->reroute("/items");
+
     }
 );
-
-function getAllParams($guid, $id){
-
-    $obj = getObjectByGUID($guid);
-
-    $cash = array_shift(array_filter($obj->CashRegisters, function($v) use ($id) { return $v->NumFiscal == $id; }))/*json_decode(file_get_contents("./json/responses/cash$id.json"))*/;
-
-    $cashRegister = json_decode(file_get_contents("./json/responses/cash$id.json"));
-
-    return [$obj, $cash, $cashRegister];
-}
 
 $f3->route('GET /@guid/cash/@id/shift/open',
     function($f3) {
         $id = $f3->PARAMS['id'];
         $guid = $f3->PARAMS['guid'];
 
-        list($obj, $cash, $cashRegister) = getAllParams($guid, $id);
+        list($obj, $cash, $cashRegister) = CacheHelper::getAllParams($guid, $id);
 
         $params = [
             'DOCTYPE' => 1,
@@ -261,16 +172,26 @@ $f3->route('GET /@guid/cash/@id/shift/open',
         ];
 
 
-        $response = getCurlResponse([
+        $response = CurlHelper::send([
             "Command" => "ShiftOpen",
             "params" => json_encode(["CHECKHEAD" => $params])
         ]);
 
+        $errors = [];
 
-//        $shift = json_decode($response);
-//        var_dump($response);
-//        die();
-        $f3->reroute("/$guid/cash/$id");
+        $response = json_decode($response, TRUE);
+
+        if(!$response['error']) {
+            OrdersModel::clear();
+            $f3->reroute("/$guid/cash/$id");
+
+        }elseif($response['error'])
+            $errors[] = $response['error'];
+
+        if($errors && count($errors) > 0){
+            $f3->set('errors', $errors);
+            echo View::instance()->render('layout.htm');
+        }
     }
 );
 
@@ -279,7 +200,7 @@ $f3->route('GET /@guid/cash/@id/shift/close',
         $id = $f3->PARAMS['id'];
         $guid = $f3->PARAMS['guid'];
 
-        list($obj, $cash, $cashRegister) = getAllParams($guid, $id);
+        list($obj, $cash, $cashRegister) = CacheHelper::getAllParams($guid, $id);
 
         $params = [
             'VER' => 1,
@@ -296,136 +217,220 @@ $f3->route('GET /@guid/cash/@id/shift/close',
             'CASHIER' => 'Семко А.М.'
         ];
 
-        $responseZClose = getCurlResponse([
-            "Command" => "zForm",
-            "params" => json_encode([
-                "ZFORMHEAD" => array_merge($params, ['ORDERTAXNUM' => "101234567890123"/*$cashRegister->LastFiscalNum*/]),
-                "ZFORMPAY" => [
-                    "SUMREAL" => "00.00",
-                    "ZFORMREALIZ" => [
-                        [
-                            "FORMPAYREAL" => "Наличные",
-                            "SUMPAYREAL" => "00.00"
-                        ]
-                    ],
-                    "SUMRET" => "00.00",
-                    "ZFORMRETURN" => [
-                        [
-                            "FORMPAYRET" => "Наличные",
-                            "SUMPAYRET" => "00.00"
-                        ]
-                    ]
-                ],
-                "ZFORMSUMREAL" => [
-                    "ZFORMTURNOVER" => [
-                        [
-                            "TURNOVERNAME" => "Обіг А",
-                            "TURNOVERTOTAL" => "00.00"
-                        ]
-                    ],
-                    "ZFORMTAX" => [
-                        [
-                            "TAXNAME" => "ПДВ А=0%",
-                            "TAXTOTAL" => "00.00"
-                        ]
-                    ],
-                    "TOTALSUMREAL" => "00.00",
-                    "TAXSUMREAL" => "00.00",
-                    "FEESUMREAL" => "00.00",
-                ],
+        $orderItems = OrdersModel::getOrdersWithItems();
+        $orders = OrdersModel::get();
 
-                "ZFORMSUMRETUNRN" =>[
-                    "ZFORMTURNOVERRET" => [
-                        [
-                            "TURNOVERNAMERET" => "Обіг А",
-                            "TURNOVERTOTALRET" => "00.00",
-                        ]
-                    ],
-                    "ZFORMTAXRET" => [
-                        [
-                            "TAXNAMERET" => "ПДВ А=0%",
-                            "TAXTOTALRET" => "00.00"
-                        ]
-                    ],
-                    "TOTALSUMRET" => "00.00",
-                    "TAXSUMRET" => "00.00",
-                    "FEESUMRET" => "00.00"
-                ],
+        $ordersParams = [];
 
-                "ZFORMBODY" => [
-                    "SERVICEINPUT" => "00.00",
-                    "SERVICEOUTPUT" => "00.00",
-                    "ORDERCOUNT" => "0",
-                    "ORDEREXPCOUNT" => "0",
-                    "ORDERLAST" => "0",
-                    "REPORTZERO" => "0"
-                ]
-            ])
-        ]);
+        $ordersParams['count'] = 0;
 
-        $responseCashRegister = getCurlResponse([
-            "Command" => "CashRegisterState",
-            "NumFiscal" => $id
-        ]);
+        $ordersParams['lastOrder'] = $orderItems ? $orderItems[0]->fixal_num : 0;
 
-        $cashRegister = json_decode($responseCashRegister);
+        foreach ($orders as $k => $v) {
 
-        $params = array_merge($params,
-            [
-                'DOCTYPE' => 2,
-                'DOCSUBTYPE' => 0,
-                'ORDERNUM' => $cashRegister->NextLocalNum
+            if ($v->order_type == 1)
+                $ordersParams['orderExpCount']++;
+            else
+                $ordersParams['orderCount']++;
+
+            $ordersParams[$v->order_type]['sumReal'] += $v->sum_real;
+            $ordersParams[$v->order_type]['sumCard'] += $v->sum_card;
+            $ordersParams[$v->order_type]['sum'] += $v->sum;
+
+        }
+
+        foreach ($orderItems as $k => $v) {
+            $postfix = "";
+            switch ($v->order_type) {
+                case 0:
+                    $postfix = "";
+                    break;
+                case 1:
+                    $postfix = "RET";
+                    break;
+            }
+
+            $ordersParams[$v->order_type]['tax']['turnover'] = [];
+            if (!$ordersParams[$v->order_type]['tax']['tax'])
+                $ordersParams[$v->order_type]['tax']['tax'] = [];
+
+            if(!$ordersParams[$v->order_type]['tax']['tax']['exc'])
+                $ordersParams[$v->order_type]['tax']['tax']['exc'] =[];
+
+            $exc = $ordersParams[$v->order_type]['tax']['tax']['exc']['exc_'.$v->action_litera. $v->action_stavka];
+
+            $exc["TAXNAME$postfix"] = "Збір " . $v->action_litera . "=" . $v->action_stavka . "%";
+            $exc["TAXTOTAL$postfix"] = FormatHelper::format_dec(floatval($exc["TAXTOTAL$postfix"]) + $v->excise_sum);
+
+            $ordersParams[$v->order_type]['tax']['tax']['exc']['exc_'.$v->action_litera. $v->action_stavka] = $exc;
+
+            if(!$ordersParams[$v->order_type]['tax']['tax']['tax'])
+                $ordersParams[$v->order_type]['tax']['tax']['tax'] =[];
+
+            $tax = $ordersParams[$v->order_type]['tax']['tax']['tax']['tax_'.$v->pdv_litera. $v->pdv_stavka];
+
+            $tax["TAXNAME$postfix"] = "ПДВ " . $v->pdv_litera . "=" . $v->pdv_stavka . "%";
+            $tax["TAXTOTAL$postfix"] = FormatHelper::format_dec(floatval($tax["TAXTOTAL$postfix"]) + $v->pdv_sum);
+
+            $ordersParams[$v->order_type]['tax']['tax']['tax']['tax_'.$v->pdv_litera. $v->pdv_stavka] = $tax;
+            $ordersParams[$v->order_type]['tax']['total'] += $v->pdv_sum;
+            $ordersParams[$v->order_type]['fee']['total'] += $v->excise_sum;
+
+            $ordersParams[$v->order_type]['turnover'][$v->pdv_litera] += $v->cost;
+
+            if($v->pdv_litera != $v->action_litera)
+                $ordersParams[$v->order_type]['turnover'][$v->action_litera] += $v->cost;
+        }
+
+        $getTurnover = function ($ordersParams, $orderType) {
+
+            $return = [];
+            $postfix = "";
+
+            switch ($orderType) {
+                case 0:
+                    $postfix = "";
+                    break;
+                case 1:
+                    $postfix = "RET";
+                    break;
+            }
+
+            if ($ordersParams[$orderType])
+                foreach ($ordersParams[$orderType]['turnover'] as $k => $v) {
+                    $return[] = [
+                        "TURNOVERNAME$postfix" => "Обіг $k",
+                        "TURNOVERTOTAL$postfix" => FormatHelper::format_dec($v)
+                    ];
+                }
+
+            return $return;
+        };
+
+        $zparams = [
+            "ZFORMHEAD" => array_merge($params, ['ORDERTAXNUM' => "101234567890123"/*$cashRegister->LastFiscalNum*/]),
+            "ZFORMPAY" => [],
+            "ZFORMBODY" => [
+                "SERVICEINPUT" => FormatHelper::format_dec($ordersParams[2]['sum']),
+                "SERVICEOUTPUT" => FormatHelper::format_dec($ordersParams[3]['sum']),
+                "ORDERCOUNT" => intval($ordersParams['orderCount']),
+                "ORDEREXPCOUNT" => intval($ordersParams['orderExpCount']),
+                "ORDERLAST" => $ordersParams['lastOrder'],
+                "REPORTZERO" => "0"
             ]
-        );
-
-        $responseShiftClose = getCurlResponse([
-            "Command" => "ShiftClose",
-            "params" => json_encode(["CHECKHEAD" => $params])
-        ]);
-
-        //header('Content-Type: text/html; charset=windows-1251');
-//        var_dump($responseShiftClose, $responseZClose);
-//        die();
-//        $shift = json_decode($responseShiftClose);
-//        var_dump($responseZClose, $responseShiftClose/*, $responseShiftClose, $params*/);
-//        die();
-        $f3->reroute("/$guid/cash/$id");
-
-    }
-);
-
-$f3->route('GET /@guid/cash/@id/zform',
-    function($f3) {
-        $id = $f3->PARAMS['id'];
-        $guid = $f3->PARAMS['guid'];
-
-        list($obj, $cash, $cashRegister) = getAllParams($guid, $id);
-
-        $params = [
-//            'DOCTYPE' => 1,
-//            'DOCSUBTYPE' => 0,
-            'VER' => 1,
-            'UID' => $guid,
-            'TIN' => $obj->Tin,
-            'INN' => $cashRegister->LastFiscalNum,
-            'ORGNAME' => $obj->Name,
-            'POINTNAME' => $obj->Name,
-            'POINTADDR' => $obj->Address,
-            'ORDERNUM' => $cashRegister->NextLocalNum,
-            'CASHDESKNUM' => $cash->NumLocal,
-            'CASHREGISTERNUM' => $cash->NumFiscal,
-            'CASHIER' => 'Семко А.М.'
         ];
 
-        $response = getCurlResponse([
+        if ($ordersParams[1]) {
+
+            $taxRet = array_merge($ordersParams[1]['tax']['tax']['exc'], $ordersParams[1]['tax']['tax']['tax']);
+
+            $zparams["ZFORMSUMRETUNRN"] = [
+                "ZFORMTURNOVERRET" => $getTurnover($ordersParams, 1),
+                "ZFORMTAXRET" => $taxRet,
+                "TOTALSUMRET" => FormatHelper::format_dec($ordersParams[1]['sum']),
+                "TAXSUMRET" => FormatHelper::format_dec($ordersParams[1]['tax']['total']),
+                "FEESUMRET" => FormatHelper::format_dec($ordersParams[1]['fee']['total'])
+            ];
+
+            $zparams["ZFORMPAY"] = array_merge($zparams["ZFORMPAY"],
+                ["SUMRET" => FormatHelper::format_dec($ordersParams[1]['sum']),
+                    "ZFORMRETURN" => [
+                        [
+                            "FORMPAYRET" => "Готівка",
+                            "SUMPAYRET" => FormatHelper::format_dec($ordersParams[1]['sumReal'])
+                        ],
+                        [
+                            "FORMPAYRET" => "Картка",
+                            "SUMPAYRET" => FormatHelper::format_dec($ordersParams[1]['sumCard'])
+                        ]
+                    ]
+                ]
+            );
+        }
+
+        if ($ordersParams[0]) {
+
+            $tax = array_merge($ordersParams[0]['tax']['tax']['exc'], $ordersParams[0]['tax']['tax']['tax']);
+
+            $zparams["ZFORMSUMREAL"] = [
+                "ZFORMTURNOVER" => $getTurnover($ordersParams, 0),
+                "ZFORMTAX" => $tax,
+                "TOTALSUMREAL" => FormatHelper::format_dec($ordersParams[0]['sum']),
+                "TAXSUMREAL" => FormatHelper::format_dec($ordersParams[0]['tax']['total']),
+                "FEESUMREAL" => FormatHelper::format_dec($ordersParams[0]['fee']['total']),
+            ];
+
+            $zparams["ZFORMPAY"] = array_merge($zparams["ZFORMPAY"],
+                [
+                    "SUMREAL" => FormatHelper::format_dec($ordersParams[0]['sum']),
+                    "ZFORMREALIZ" => [
+                        [
+                            "FORMPAYREAL" => "Готівка",
+                            "SUMPAYREAL" => FormatHelper::format_dec($ordersParams[0]['sumReal'])
+                        ],
+                        [
+                            "FORMPAYREAL" => "Картка",
+                            "SUMPAYREAL" => FormatHelper::format_dec($ordersParams[0]['sumCard'])
+                        ]
+                    ]
+                ]);
+
+        }
+
+        $errors = [];
+
+        $responseZClose = CurlHelper::send([
             "Command" => "zForm",
-            "params" => json_encode(["CHECKHEAD" => $params])
+            "params" => json_encode($zparams)
         ]);
 
-        $shift = json_decode($response);
-        var_dump($response);
-        die();
-        $f3->reroute("/$guid/cash/$id");
+        $responseZClose = json_decode($responseZClose, TRUE);
+
+        if($responseZClose['error'])
+            $errors[] = $responseZClose['error'];
+
+        if (!$responseZClose['error']) {
+
+            OrdersModel::clear();
+
+            $responseCashRegister = CurlHelper::send([
+                "Command" => "CashRegisterState",
+                "NumFiscal" => $id
+            ]);
+
+            $cashRegister = json_decode($responseCashRegister);
+
+            if($cashRegister->error)
+                $errors[] = $cashRegister->error;
+
+            $params = array_merge($params,
+                [
+                    'DOCTYPE' => 2,
+                    'DOCSUBTYPE' => 0,
+                    'ORDERNUM' => $cashRegister->NextLocalNum
+                ]
+            );
+
+            $responseShiftClose = CurlHelper::send([
+                "Command" => "ShiftClose",
+                "params" => json_encode(["CHECKHEAD" => $params])
+            ]);
+
+            $responseShiftClose = json_decode($responseShiftClose, TRUE);
+
+            if($responseShiftClose['error'])
+                $errors[] = $responseShiftClose['error'];
+
+            if(!$responseZClose['error'])
+                $f3->reroute("/$guid/cash/$id/shifts/zform/{$responseZClose["ORDERTAXNUM"]}");
+
+        }
+
+        if($errors){
+            $f3->set('errors', $errors);
+            echo View::instance()->render('layout.htm');
+        }
+
     }
 );
 
@@ -434,102 +439,16 @@ $f3->route('GET /@guid/cash/@id/documents',
         $id = $f3->PARAMS['id'];
         $guid = $f3->PARAMS['guid'];
 
-        $response = json_decode(getCurlResponse([
+        $response = json_decode(CurlHelper::send([
             "Command" => "CashRegisterState",
             "NumFiscal" => $id
         ]));
 
-        $documents = getCurlResponse([
+        $documents = CurlHelper::send([
             "Command" => "Documents",
             "ShiftId" => $response->ShiftId,
         ]);
 
-        var_dump($documents);
-
-//
-//        //$shift = json_decode($response);
-//        $f3->reroute("/cash/$id");
-    }
-);
-
-$f3->route('GET /testxml',
-    function($f3){
-
-        $datetime = new DateTime();
-
-        $params = [
-            "CHECKHEAD" => [
-                'DOCTYPE' => 0,
-                'DOCSUBTYPE' => 0,
-                'VER' => 1,
-                'UID' => "UIUIUIIUIUIUIUIUIIUI",
-                'TIN' => "878970909090",
-                //'INN' => $cashRegister->LastFiscalNum,
-                'ORGNAME' => "Киоск",
-                'POINTNAME' => "Киоск",
-                'POINTADDR' => "Черноморск",
-                'ORDERDATE' => $datetime->format("dmY"),
-                'ORDERTIME' => $datetime->format("His"),
-                'ORDERNUM' => "78980809899",
-                'ORDERTAXNUM' => "78980809899",
-                'CASHDESKNUM' => "8787899",
-                'CASHREGISTERNUM' => "88995544",
-                'CASHIER' => 'Семко А.М.'
-            ],
-            "CHECKBODY" => [
-                [
-                    "CODE" => "777",
-                    "UKTZED" => "777",
-                    "NAME" => "NAME",
-                    "UNITCODE" => "yyy",
-                    "UNITNAME" => "title",
-                    "AMOUNT" => 20,
-                    "PRICE" => number_format(20, 2),
-                    "LETTER" => "A",
-                    "LETTEREXCISE" => "a1",
-                    "COST" => number_format(10, 2)
-                ],
-                [
-                    "CODE" => "888",
-                    "UKTZED" => "777",
-                    "NAME" => "NAME",
-                    "UNITCODE" => "yyy",
-                    "UNITNAME" => "title",
-                    "AMOUNT" => 20,
-                    "PRICE" => number_format(20, 2),
-                    "LETTER" => "A",
-                    "LETTEREXCISE" => "a1",
-                    "COST" => number_format(10, 2)
-                ],
-            ]
-        ];
-
-        $check = getCurlResponse([
-            "Command" => "Check",
-            "params" => json_encode($params)
-        ]);
-        header('Content-Type: application/xml; charset=windows-1251');
-        echo $check;
-    }
-);
-
-
-$f3->route('GET /@guid/cash/@id/check/@fNum',
-    function($f3) {
-        $fNum = $f3->PARAMS['fNum'];
-        $guid = $f3->PARAMS['guid'];
-
-        $check = getCurlResponse([
-            "Command" => "CheckShow",
-            "NumFiscal" => $fNum
-        ]);
-
-        header('Content-Type: text/html; charset=windows-1251');
-        var_dump($check);
-
-//
-//        //$shift = json_decode($response);
-//        $f3->reroute("/cash/$id");
     }
 );
 
@@ -539,47 +458,64 @@ $f3->route('GET /@guid/cash/@id/shifts',
         $guid = $f3->PARAMS['guid'];
 
         $datetime = new DateTime();
-        $dateFrom = new DateTime('-1 days');
+        $dateFrom = new DateTime('-6 hours');
 
-        $shifts = getCurlResponse([
+        $errors = [];
+
+        $shifts = CurlHelper::send([
             "Command" => "Shifts",
             "NumFiscal" => $id,
             "From" => $dateFrom->format("Y-m-d H:i:s"),
             "To" => $datetime->format("Y-m-d H:i:s")
         ]);
 
-//        $datefrom = $dateFrom->format("Y-m-d H:i:s");
-//        $dateto = $datetime->format("Y-m-d H:i:s");
-
         $shifts = json_decode($shifts);
 
-//        var_dump($shifts);
-//        die();
+        if($shifts->error)
+            $errors[] = $shifts->error;
+        else {
+            foreach ($shifts->Shifts as $k => $v) {
 
-        foreach($shifts->Shifts as $k=> $v){
+                $documents = CurlHelper::send([
+                    "Command" => "Documents",
+                    "ShiftId" => $v->ShiftId
+                ]);
 
-            $documents = getCurlResponse([
-                "Command" => "Documents",
-                "ShiftId" => $v->ShiftId
-            ]);
+                $docs = json_decode($documents);
 
-            $docs = json_decode($documents);
+                if($docs->error)
+                    $errors[] = $docs->error;
 
-            $v->documents = array_reverse($docs->Documents);
+                $v->documents = array_reverse($docs->Documents);
+
+                foreach ($v->documents as $k1 => $v1) {
+
+                    $check = CurlHelper::send([
+                        "Command" => "CheckShow",
+                        "NumFiscal" => $v1->NumFiscal
+                    ]);
+
+                    if ($check) {
+                        $check = json_decode($check);
+                        $v1->CheckDocSubType = $check->CHECKHEAD->DOCSUBTYPE;
+
+                        if(count($shifts->Shifts) <=0 )
+                            $errors[] = "За последние 6 часов не было никакой активности.";
+                    }
+
+                }
+            }
+
+            $f3->set("shifts", array_reverse($shifts->Shifts));
+            $f3->set('content', 'shifts.htm');
         }
 
         $f3->set('id', $id);
         $f3->set('guid', $guid);
-        $f3->set("shifts", array_reverse($shifts->Shifts));
-        $f3->set('content', 'shifts.htm');
+        $f3->set("backHref", "/$guid/cashRegisters");
+        $f3->set('errors', $errors);
         echo View::instance()->render('layout.htm');
 
-//        var_dump($check, $datefrom, $dateto);
-//        die();
-
-//
-//        //$shift = json_decode($response);
-//        $f3->reroute("/cash/$id");
     }
 );
 
@@ -589,140 +525,31 @@ $f3->route('GET /@guid/cash/@cashid/shifts/check/@id',
         $guid = $f3->PARAMS['guid'];
         $id = $f3->PARAMS['id'];
 
-        $check = getCurlResponse([
+        $check = CurlHelper::send([
             "Command" => "CheckShow",
             "NumFiscal" => $id,
         ]);
 
-//        header('Content-Type: text/html; charset=windows-1251');
-        header('Content-Type: text/html; charset=UTF-8');
+        $check = json_decode($check ,TRUE);
 
-        $xml = new \SimpleXMLElement($check);
+        $errors = [];
 
-        //var_dump($xml->asXML());
+        if(!$check['error']) {
 
-        $check = json_decode(mb_convert_encoding(json_encode($xml, JSON_UNESCAPED_UNICODE),"windows-1251","UTF-8"), TRUE);
+            $datestr = preg_replace("/(\d{2})(\d{2})(\d{4})/", "$1.$2.$3", $check["CHECKHEAD"]["ORDERDATE"]);
+            $datestr .= " " . preg_replace("/(\d{2})(\d{2})(\d{2})/", "$1:$2:$3", $check["CHECKHEAD"]["ORDERTIME"]);
 
-//        file_put_contents("./json/XML111.xml",$xml->asXML());
-//
-//        $p = xml_parser_create();
-//        xml_parse_into_struct($p, $xml->asXML(), $vals, $index);
-//        xml_parser_free($p);
-//        echo "Index array\n";
-//        print_r($index);
-//        echo "\nVals array\n";
-//        print_r($vals);
-//        var_dump($check);
-//
-//        die();
+            $f3->set('date', $datestr);
+            $f3->set('id', $id);
+            $f3->set('guid', $guid);
+            $f3->set("check", $check);
+            $f3->set('content', 'check.htm');
+        }elseif($check['error'])
+            $errors[] = $check['error'];
 
-        $datestr = preg_replace("/(\d{2})(\d{2})(\d{4})/", "$1.$2.$3", $check["CHECKHEAD"]["ORDERDATE"]);
-        $datestr.= " ". preg_replace("/(\d{2})(\d{2})(\d{2})/", "$1:$2:$3", $check["CHECKHEAD"]["ORDERTIME"]);
-
-        $f3->set('date',  $datestr);
-        $f3->set('id', $id);
-        $f3->set('guid', $guid);
-        $f3->set("check", $check);
+        $f3->set("errors", $errors);
         $f3->set("backHref", "/$guid/cash/$cashid/shifts/");
-        $f3->set('content', 'check.htm');
-        echo View::instance()->render('layout.htm');
 
-    }
-);
-
-$f3->route('GET /shifts/check',
-    function($f3) {
-//        $cashid = $f3->PARAMS['cashid'];
-//        $guid = $f3->PARAMS['guid'];
-//        $id = $f3->PARAMS['id'];
-
-        $datetime = new \DateTime('now');
-
-        $params = [
-            "CHECKHEAD" => [
-                'DOCTYPE' => 0,
-                'DOCSUBTYPE' => 0,
-                'VER' => 1,
-                'UID' => "UIUIUIIUIUIUIUIUIIUI",
-                'TIN' => "878970909090",
-                //'INN' => $cashRegister->LastFiscalNum,
-                'ORGNAME' => "Киоск",
-                'POINTNAME' => "Киоск",
-                'POINTADDR' => "Черноморск",
-                'ORDERDATE' => $datetime->format("dmY"),
-                'ORDERTIME' => $datetime->format("His"),
-                'ORDERNUM' => "78980809899",
-                'ORDERTAXNUM' => "78980809899",
-                'CASHDESKNUM' => "8787899",
-                'CASHREGISTERNUM' => "88995544",
-                'CASHIER' => 'Семко А.М.'
-            ],
-            "CHECKBODY" => [
-                "ROW" => [
-                    [
-                        "CODE" => "777",
-                        "UKTZED" => "777",
-                        "NAME" => "NAME",
-                        "UNITCODE" => "yyy",
-                        "UNITNAME" => "title",
-                        "AMOUNT" => 20,
-                        "PRICE" => number_format(20, 2),
-                        "LETTER" => "A",
-                        "LETTEREXCISE" => "a1",
-                        "COST" => number_format(10, 2)
-                    ],
-                    [
-                        "CODE" => "888",
-                        "UKTZED" => "777",
-                        "NAME" => "NAME",
-                        "UNITCODE" => "yyy",
-                        "UNITNAME" => "title",
-                        "AMOUNT" => 20,
-                        "PRICE" => number_format(20, 2),
-                        "LETTER" => "A",
-                        "LETTEREXCISE" => "a1",
-                        "COST" => number_format(10, 2)
-                    ],
-                ]
-            ]
-        ];
-
-
-
-        $params["CHECKTOTAL"] = [
-            "TOTALSUM" => number_format(480 ,2)
-        ];
-
-        $params["CHECKPAY"] = [
-            [
-                "PAYMENTFORM" => "Наличные",
-                "SUM" => number_format(480, 2)
-            ]
-        ];
-
-        $params["CHECKTAX"] = [
-            [
-                "TAXCODE" => "A",
-                "TAXPRC" => number_format(20.00, 2),
-                "TAXSUM" => number_format(80.00, 2)
-            ]
-        ];
-
-//        $check = getCurlResponse([
-//            "Command" => "CheckShow",
-//            "NumFiscal" => $id,
-//        ]);
-//
-//        $xml = new \SimpleXMLElement($check);
-
-//        $f3->set('id', $id);
-        $datestr = preg_replace("/(\d{2})(\d{2})(\d{4})/", "$1.$2.$3",$params["CHECKHEAD"]["ORDERDATE"]);
-        $datestr.= " ". preg_replace("/(\d{2})(\d{2})(\d{2})/", "$1:$2:$3",$params["CHECKHEAD"]["ORDERTIME"]);
-
-        $f3->set('check', $params);
-        $f3->set('date',  $datestr);
-//        $f3->set("check", json_decode(json_encode($xml), TRUE));
-        $f3->set('content', 'check.htm');
         echo View::instance()->render('layout.htm');
 
     }
@@ -735,58 +562,172 @@ $f3->route('GET /@guid/cash/@cashid/shifts/zform/@id',
         $guid = $f3->PARAMS['guid'];
         $id = $f3->PARAMS['id'];
 
-        $check = getCurlResponse([
+        $errors = [];
+
+        $check = CurlHelper::send([
             "Command" => "zFormShow",
             "NumFiscal" => $id,
         ]);
 
-        $xml = new \SimpleXMLElement($check);
+        $check = json_decode($check, TRUE);
 
-        $f3->set("id", $id);
+        if(!$check["error"]) {
+            $f3->set("id", $id);
+            $f3->set("check", $check);
+            $f3->set('content', 'zform.htm');
+
+        }else
+            $errors[] = $check["error"];
+
+        $f3->set("errors", $errors);
         $f3->set("backHref", "/$guid/cash/$cashid/shifts/");
-        $f3->set("check", json_decode(json_encode($xml), TRUE));
-        $f3->set('content', 'zform.htm');
         echo View::instance()->render('layout.htm');
 
     }
 );
 
-$f3->route('GET /@guid/cash/@id/ticket/new',
+$f3->route('GET /@guid/cash/@id/ticket/@type/new',
     function($f3) {
         $id = $f3->PARAMS['id'];
         $guid = $f3->PARAMS['guid'];
+        $type = $f3->PARAMS['type'];
 
         ItemListModel::clear();
-        $f3->reroute("/$guid/cash/$id/ticket/item/select");
+        $f3->reroute("/$guid/cash/$id/ticket/$type/item/select");
     }
 );
 
-$f3->route('GET|POST /@guid/cash/@id/ticket/item/select',
+
+$f3->route('POST /@guid/cash/@cashid/money/@type/add',
+    function($f3) {
+        $cashid = $f3->PARAMS['cashid'];
+        $guid = $f3->PARAMS['guid'];
+        $type = $f3->PARAMS['type'];
+
+        if($f3->POST['sum']){
+            $sum = $f3->POST['sum'];
+
+            list($obj, $cash, $cashRegister) = CacheHelper::getAllParams($guid, $cashid);
+
+            $params = [
+                'DOCTYPE' => 0,
+                'DOCSUBTYPE' => $type,
+                'VER' => 1,
+                'UID' => $guid,
+                'TIN' => $obj->Tin,
+                'INN' => "123456789012",
+                'ORDERTAXNUM' => "101234567890123",
+                //'INN' => $cashRegister->LastFiscalNum,
+                'ORGNAME' => $obj->Name,
+                'POINTNAME' => $obj->Name,
+                'POINTADDR' => $obj->Address,
+                'ORDERNUM' => $cashRegister->NextLocalNum,
+                'CASHDESKNUM' => $cash->NumLocal,
+                'CASHREGISTERNUM' => $cash->NumFiscal,
+                'CASHIER' => 'Семко А.М.'
+            ];
+
+            $responseCheck = CurlHelper::send([
+                "Command" => "Check",
+                "params" => json_encode([
+                    "CHECKHEAD" => $params,
+                    "CHECKTOTAL" => [
+                        "TOTALSUM" => FormatHelper::format_dec($sum)
+                    ],
+                    "CHECKPAY" => [
+                        [
+                            "PAYMENTFORM" => "Готівка",
+                            "SUM" => FormatHelper::format_dec($sum)
+                        ]
+                    ]
+                ])
+            ]);
+
+             $errors = [];
+
+             $responseCheck = json_decode($responseCheck, TRUE);
+
+             if(!$responseCheck["error"]) {
+                     OrdersModel::addItem([
+                         ":guid" => $guid,
+                         ":fixal_num" => $responseCheck["ORDERTAXNUM"],
+                         ":sum" => $sum,
+                         ":sum_real" => $sum,
+                         ":sum_card" => 0,
+                         ":order_type" => $type
+                     ]);
+
+                     $f3->reroute("/$guid/cash/$cashid/shifts/check/{$responseCheck["ORDERTAXNUM"]}");
+             }else
+                 $errors[] = $responseCheck["error"];
+
+
+             if($errors && count($errors) > 0){
+                 $f3->set("errors", $errors);
+                 echo View::instance()->render('layout.htm');
+             }
+
+        }
+
+    });
+
+$f3->route('GET|POST /@guid/cash/@id/money/put',
+    function($f3) {
+        $cashid = $f3->PARAMS['id'];
+        $guid = $f3->PARAMS['guid'];
+
+            $f3->set("cashid", $cashid);
+            $f3->set("guid", $guid);
+            $f3->set("type", 2); // служебный взнос
+            $f3->set("backHref", "/$guid/cash/$cashid");
+            $f3->set('content', 'moneyForm.htm');
+            echo View::instance()->render('layout.htm');
+    }
+);
+
+$f3->route('GET|POST /@guid/cash/@id/money/get',
+    function($f3) {
+        $cashid = $f3->PARAMS['id'];
+        $guid = $f3->PARAMS['guid'];
+
+        $f3->set("cashid", $cashid);
+        $f3->set("guid", $guid);
+        $f3->set("type", 3); // служебный взнос
+        $f3->set("backHref", "/$guid/cash/$cashid");
+        $f3->set('content', 'moneyForm.htm');
+        echo View::instance()->render('layout.htm');
+    }
+);
+
+$f3->route('GET|POST /@guid/cash/@id/ticket/@type/item/select',
     function($f3) {
         $id = $f3->PARAMS['id'];
         $guid = $f3->PARAMS['guid'];
+        $type = $f3->PARAMS['type'];
 
         $items = ItemModel::get();
 
         $f3->set('isMain', false);
-        $f3->set('title', "Добавить товар");
+        $f3->set('title', "Додати товар");
         $f3->set('items', $items);
         $f3->set('id', $id);
         $f3->set('guid', $guid);
+        $f3->set('type', $type);
+        $f3->set("backHref", "/$guid/cash/$id");
         $f3->set('content','addItem.htm');
         echo View::instance()->render('layout.htm');
     }
 );
 
-$f3->route('GET|POST /@guid/cash/@id/ticket/item/add',
+$f3->route('GET|POST /@guid/cash/@id/ticket/@type/item/add',
     function($f3) {
         $id = $f3->PARAMS['id'];
         $guid = $f3->PARAMS['guid'];
         $items = $f3->POST['items'];
         $counts = $f3->POST['counts'];
+        $type = $f3->PARAMS['type'];
 
         if($items){
-            //var_dump($f3->POST['items'], $f3->POST['counts']);
             foreach($items as $k=>$v) {
                 ItemListModel::addItem([":guid" => "", ":item_id" => $k, ":count" => intval($counts[$k])]);
             }
@@ -796,10 +737,12 @@ $f3->route('GET|POST /@guid/cash/@id/ticket/item/add',
             $items = ItemListModel::get();
 
             $f3->set('isMain', false);
-            $f3->set('title', "Список товаров");
+            $f3->set('title', "Список товарів");
             $f3->set('items', $items);
             $f3->set('id', $id);
             $f3->set('guid', $guid);
+            $f3->set('type', $type);
+            $f3->set("backHref", "/$guid/cash/$id/ticket/$type/item/select");
             $f3->set('content','itemsList.htm');
             echo View::instance()->render('layout.htm');
 
@@ -807,39 +750,46 @@ $f3->route('GET|POST /@guid/cash/@id/ticket/item/add',
     }
 );
 
-$f3->route('GET|POST /@guid/cash/@id/ticket/pay',
+$f3->route('GET|POST /@guid/cash/@cashid/ticket/@type/pay',
     function($f3) {
-        $id = $f3->PARAMS['id'];
+        $cashid = $f3->PARAMS['cashid'];
         $guid = $f3->PARAMS['guid'];
         $total = $f3->POST['total'];
+        $type = $f3->PARAMS['type'];
 
         $f3->set('isMain', false);
         $f3->set('title', "Оплата чека");
         $f3->set('total', $total?$total:0);
-        $f3->set('id', $id);
+        $f3->set('cashid', $cashid);
         $f3->set('guid', $guid);
+        $f3->set('type', $type);
+        $f3->set("backHref", "/$guid/cash/$cashid/ticket/$type/new");
         $f3->set('content','ticketPay.htm');
 
         echo View::instance()->render('layout.htm');
     }
 );
 
-$f3->route('GET|POST /@guid/cash/@id/ticket/fixal',
+$f3->route('POST /@guid/cash/@id/ticket/@type/fixal',
     function($f3) {
 
         $id = $f3->PARAMS['id'];
         $guid = $f3->PARAMS['guid'];
         $total = $f3->POST['total'];
+        $sumNal = $f3->POST['sumNal'];
+        $sumCard = $f3->POST['sumCard'];
+        $type = $f3->PARAMS['type'];
 
-
-        list($obj, $cash, $cashRegister) = getAllParams($guid, $id);
+        list($obj, $cash, $cashRegister) = CacheHelper::getAllParams($guid, $id);
+        
+        $errors = [];
 
         $items = ItemListModel::get();
 
         $params = [
             "CHECKHEAD" => [
                 'DOCTYPE' => 0,
-                'DOCSUBTYPE' => 0,
+                'DOCSUBTYPE' => $type,
                 'VER' => 1,
                 'UID' => $guid,
                 'TIN' => $obj->Tin,
@@ -855,8 +805,19 @@ $f3->route('GET|POST /@guid/cash/@id/ticket/fixal',
             ]];
 
         $total = 0;
+
+        $params["CHECKEXCISE"] = [];
+        $params["CHECKTAX"] = [];
+
+        $checkExcise = [];
+        $checkTax = [];
+
         foreach($items as $k=>$v){
-            $total += ($v->price * $v->count);
+            $cost = $v->price * $v->count;
+            $total += $cost;
+
+            $pdv_litera = $v->pdv_litera;
+            $action_litera = $v->action_litera;
 
             $params["CHECKBODY"][] = [
                 "CODE" => $v->code,
@@ -865,85 +826,99 @@ $f3->route('GET|POST /@guid/cash/@id/ticket/fixal',
                 "UNITCODE" => $v->em_code,
                 "UNITNAME" => $v->em_title,
                 "AMOUNT" => $v->count,
-                "PRICE" => number_format($v->price, 2),
-                "LETTER" => $v->pdv_litera,
-                "LETTEREXCISE" => $v->action_litera,
-                "COST" => number_format(($v->price * $v->count), 2)
+                "PRICE" => FormatHelper::format_dec($v->price),
+                "LETTER" => $pdv_litera,
+                "LETTEREXCISE" => $action_litera,
+                "COST" => FormatHelper::format_dec($cost)
             ];
 
-            $params["CHECKEXCISE"][] = [
-                "EXCISECODE" => $v->action_litera,
-                "EXCISEPRC" => number_format($v->action_stavka, 2),
-                "EXCISESUM" => number_format((($v->price * $v->action_stavka) / (100 + $v->action_stavka)), 2)
-            ];
+            $exciseSum = (($cost * $v->action_stavka) / (100 + $v->action_stavka));
+            $taxSum = (($cost - $exciseSum) *  $v->pdv_stavka)/ (100 + $v->pdv_stavka);
 
-            $params["CHECKTAX"][] = [
-                "TAXCODE" => $v->pdv_litera,
-                "TAXPRC" => number_format($v->pdv_stavka, 2),
-                "TAXSUM" => number_format((($v->price /100) * $v->pdv_stavka), 2)
-            ];
+            if(!$checkExcise[$action_litera.$v->action_stavka])
+                $checkExcise[$action_litera.$v->action_stavka] = [];
+
+            $exc = $checkExcise[$action_litera.$v->action_stavka];
+
+            $exc["EXCISECODE"] = $action_litera;
+            $exc["EXCISEPRC"] = FormatHelper::format_dec($v->action_stavka);
+
+            $exc["EXCISESUM"] = FormatHelper::format_dec(floatval($exc["EXCISESUM"]) + $exciseSum);
+
+            $checkExcise[$action_litera.$v->action_stavka] = $exc;
+
+            if(!$checkTax[$pdv_litera.$v->pdv_stavka])
+                $checkTax[$pdv_litera.$v->pdv_stavka] = [];
+
+            $tax = $checkTax[$pdv_litera.$v->pdv_stavka];
+
+            $tax["TAXCODE"] = $pdv_litera;
+            $tax["TAXPRC"] = FormatHelper::format_dec($v->pdv_stavka);
+
+            $tax["TAXSUM"] = FormatHelper::format_dec(floatval($tax["TAXSUM"]) + $taxSum);
+
+            $checkTax[$pdv_litera.$v->pdv_stavka] = $tax;
+
+            OrderItemsModel::addItem([
+                ":item_id" => $v->item_id,
+                ":count" => intval($v->count),
+                ":order_id" => 0,
+                ":pdv_sum" => $taxSum,
+                ":excise_sum" => $exciseSum,
+                ":cost" => $cost
+                ]);
         }
 
+        $params["CHECKEXCISE"] = array_values($checkExcise);
+        $params["CHECKTAX"] = array_values($checkTax);
+
+
         $params["CHECKTOTAL"] = [
-            "TOTALSUM" => number_format((floatval($total) + 80),2)
+            "TOTALSUM" => FormatHelper::format_dec((floatval($total)))
         ];
 
         $params["CHECKPAY"] = [
             [
-                "PAYMENTFORM" => "Наличные",
-                "SUM" => number_format($total, 2)
+                "PAYMENTFORM" => "Готівка",
+                "SUM" => FormatHelper::format_dec($sumNal)
+            ],
+            [
+                "PAYMENTFORM" => "Картка",
+                "SUM" => FormatHelper::format_dec($sumCard)
             ]
         ];
 
-        $responseCheck = getCurlResponse([
+        $responseCheck = CurlHelper::send([
             "Command" => "Check",
             "params" => json_encode($params, JSON_UNESCAPED_UNICODE)
         ]);
 
-        $responseCheckXml = new \SimpleXMLElement($responseCheck);
+        $responseCheck = json_decode($responseCheck, TRUE);
 
-        $f3->reroute("/$guid/cash/$id/shifts/check/{$responseCheckXml->ORDERTAXNUM}");
+        if(!$responseCheck["error"]) {
 
-//        $check = getCurlResponse([
-//            "Command" => "CheckShow",
-//            "NumFiscal" => $responseCheckXml->ORDERTAXNUM,
-//        ]);
-//
-//        $checkXml = new \SimpleXMLElement($check);
-//
-//        $check = json_decode(json_encode($checkXml), TRUE);
-//
-//        $datestr = preg_replace("/(\d{2})(\d{2})(\d{4})/", "$1.$2.$3", $check["CHECKHEAD"]["ORDERDATE"]);
-//        $datestr.= " ". preg_replace("/(\d{2})(\d{2})(\d{2})/", "$1:$2:$3", $check["CHECKHEAD"]["ORDERTIME"]);
-//
-//
-//        $f3->set('date',  $datestr);
-//        $f3->set('id', $responseCheckXml->ORDERTAXNUM);
-//        $f3->set('guid', $guid);
-//        $f3->set("check", $check);
-//        $f3->set('content', 'check.htm');
-//        echo View::instance()->render('layout.htm');
+            $orderId = OrdersModel::addItem([
+                ":guid" => $guid,
+                ":fixal_num" => $responseCheck["ORDERTAXNUM"],
+                ":sum" => $total,
+                ":sum_real" => $sumNal,
+                ":sum_card" => $sumCard,
+                ":order_type" => $type
+            ]);
+            OrderItemsModel::updateFixalNum($responseCheck["ORDERTAXNUM"]);
+            OrderItemsModel::updateOrderId($orderId);
+            $f3->reroute("/$guid/cash/$id/shifts/check/{$responseCheck["ORDERTAXNUM"]}");
 
-//        $shift = json_decode($responseShiftClose);
-//        var_dump($responseCheck);
-//        die();
-//        $f3->reroute("/$guid/cash/$id");
-//        $f3->set('isMain', false);
-//        $f3->set('title', "Оплата чека");
-//        $f3->set('total', $total?$total:0);
-//        $f3->set('id', $id);
-//        $f3->set('content','ticketPay.htm');
-//
-//        echo View::instance()->render('layout.htm');
+        }else{
+            $errors[] = $responseCheck["error"];
+        }
+
+        if($errors && count($errors) > 0){
+            $f3->set('errors', $errors);
+            echo View::instance()->render('layout.htm');
+        }
+
     }
 );
-
-//$f3->route('GET /userref',
-//	function($f3) {
-//		$f3->set('content','userref.htm');
-//		echo View::instance()->render('layout.htm');
-//	}
-//);
-
 
 $f3->run();

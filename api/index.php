@@ -1,175 +1,82 @@
 <?php
 
-//header('Content-Type: application/json; charset=windows-1251');
+require "./lib/libApi.php";
 
-require "./Helpers/XMLHelper.php";
-require "./Helpers/CurlHelper.php";
-
-use Helpers\XMLHelper;
-use Helpers\CurlHelper;
+use Api\libApi;
 
 if(!$_POST['Command'])
     echo "api";
 
 switch($_POST['Command']) {
+    // return json
     case 'Objects' :
-        {
-            $return = CurlHelper::sign(json_encode(["Command" => "Objects"]));
-            if(!$return['error'])
-                $return = CurlHelper::getCurlResponse($return);
-            echo $return;
-        };
-        break;
+    {
+        echo libApi::objects();
+    };
+    break;
+    // return json
     case 'CashRegisterState':
-        {
-            $return = CurlHelper::sign(json_encode(["Command" => "CashRegisterState", "NumFiscal" => $_POST['NumFiscal']]))/*file_get_contents("./bin/cashRegister".$_POST['NumFiscal'].".json.p7s")*/;
-
-            if(!$return['error'])
-                $return = CurlHelper::getCurlResponse($return);
-
-            echo $return;
-        }
-        break;
+    {
+        echo libApi::CashRegisterState($_POST['NumFiscal']);
+    }
+    break;
+    // return json
     case 'Documents':
     {
-        $return = CurlHelper::sign(json_encode([
-            "Command" => "Documents",
-            "ShiftId" => $_POST['ShiftId']
-        ]));
 
-        if(!$return['error'])
-            $return = CurlHelper::getCurlResponse($return);
-
-        echo $return;
+        echo libApi::documents($_POST['ShiftId']);
     }
         break;
+    // return json
     case 'Check':
     {
-        $params = json_decode($_POST['params']/*, TRUE*/);
+        $params = json_decode($_POST['params']);
 
-        $xml = XMLHelper::makeCheckXML($params);
-
-        file_put_contents("./bin/checkRaw11.xml", $xml);
-//        $return = $xml;
-        $return = CurlHelper::sign($xml);
-
-//        $return = iconv("UTF-8", "windows-1251", $return);
-
-        file_put_contents("./bin/checkRaw22.xml", $return);
-
-        if(!$return['error'])
-            $return = CurlHelper::getCurlResponse($return, "doc");
-
-        file_put_contents("./bin/checkRaw33.xml", $return);
-
-//        $return = iconv("windows-1251", "UTF-8", $return);
-
-        if(!$return['error'])
-            $return = CurlHelper::decrypt($return);
-
-        file_put_contents("./bin/checkRaw34.xml", $return);
-
-        echo $return;
+        echo libApi::check($params);
 
     }
         break;
+    // return json
     case 'Shifts':
     {
-        $return = CurlHelper::sign(json_encode([
-            "Command" => "Shifts",
-            "NumFiscal" => $_POST['NumFiscal'],
-            "From" => $_POST['From'],
-            "To" => $_POST['To']
-        ]));
 
-        if(!$return['error'])
-            $return = CurlHelper::getCurlResponse($return);
-        if(!$return['error'])
-            $return = CurlHelper::decrypt($return);
-
-        echo $return;
+        echo libApi::shifts($_POST['NumFiscal'], $_POST['From'], $_POST['To']);
     }
         break;
+    // return json
     case 'CheckShow':{
 
-        $return = CurlHelper::sign(json_encode([
-            "Command" => "Check",
-            "NumFiscal" => $_POST['NumFiscal'],
-        ]));
-
-        if(!$return['error'])
-            $return = CurlHelper::getCurlResponse($return);
-
-        file_put_contents("./bin/checkRaw.xml", $return);
-
-        if(!$return['error'])
-            $return = CurlHelper::decrypt($return);
-
-        file_put_contents("./bin/checkDecr.xml", $return);
-
-//        file_put_contents("./bin/pf1.xml",$response);
-        echo $return;
+        echo libApi::checkShow($_POST['NumFiscal']);
     }
         break;
+    // return json
     case 'zFormShow':{
 
-        $return = CurlHelper::sign(json_encode([
-            "Command" => "zForm",
-            "NumFiscal" => $_POST['NumFiscal'],
-        ]));
-
-        if(!$return['error'])
-            $return = CurlHelper::getCurlResponse($return);
-        if(!$return['error'])
-            $return = CurlHelper::decrypt($return);
-
-//        file_put_contents("./bin/pf1.xml",$response);
-        echo $return;
+        echo libApi::zFormShow($_POST['NumFiscal']);
     }
         break;
+    // return json
     case 'ShiftOpen':
     {
         $params = json_decode($_POST['params']);
-//
-        $xml = XMLHelper::makeShiftXML($params);
 
-        $return = CurlHelper::sign($xml);
-
-        if(!$return['error'])
-            $return = CurlHelper::getCurlResponse($return, "doc");
-
-        echo $return;
+        echo libApi::shiftOpen($params);
     }
     break;
-
+    // return json
     case 'zForm':
     {
         $params = json_decode($_POST['params']);
 
-        $xml = XMLHelper::makeZFormXML($params);
-        $return = CurlHelper::sign($xml);
-//        file_put_contents("./bin/shiftOpen.xml.p7s", $signedData);
-        if(!$return['error'])
-            $return = CurlHelper::getCurlResponse($return, "doc");
-        if(!$return['error'])
-            $return = CurlHelper::decrypt($return);
-
-        echo $return;
+        echo libApi::zForm($params);
     }
         break;
-
+    // return json
     case 'ShiftClose':
     {
         $params = json_decode($_POST['params']);
 
-        $xml = XMLHelper::makeShiftXML($params);
-        $return = CurlHelper::sign($xml);
-        if(!$return['error'])
-            $return = CurlHelper::getCurlResponse($return, "doc");
-        if(!$return['error'])
-            $return = CurlHelper::decrypt($return);
-
-        echo $return;
+        echo libApi::shiftClose($params);
     }
         break;
 }

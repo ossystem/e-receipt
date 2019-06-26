@@ -35,7 +35,7 @@
 	<ZFORMPAY>
 		<!--Всего сумма реализации (15.2 цифры)-->
 		<SUMREAL>00.00</SUMREAL>
-        	<ZFORMREALIZ>		
+        	<ZFORMREALIZ>
                 <ROW ROWNUM="1">
                     <!--форма оплаты реализации (64символа, обязательный)-->
                     <FORMPAYREAL>Готівка</FORMPAYREAL>
@@ -46,33 +46,33 @@
 			
 		<!--Всего сумма возврата (15.2 цифры)-->
 		<SUMRET>00.00</SUMRET>
-        	<ZFORMRETURN>		
+        	<ZFORMRETURN>
 			<ROW ROWNUM="1">
 				<!--форма оплаты возврата(64символа, обязательный)-->
 				<FORMPAYRET>Готівка</FORMPAYRET>
 				<!--Сумма оплаты (15.2 цифры)-->
 				<SUMPAYRET>00.00</SUMPAYRET>
-			</ROW>			
+			</ROW>
         	</ZFORMRETURN>		
 	</ZFORMPAY>
 	
 <!--Реализація-->
 	<ZFORMSUMREAL>
-        	<ZFORMTURNOVER>		
+        	<ZFORMTURNOVER>
 			<ROW ROWNUM="1">
 				<!--обіг (64символа, обязательный)-->
-				<TURNOVERNAME>Обіг А</TURNOVERNAME>
+				<TURNOVERNAME>Обіг</TURNOVERNAME>
 				<!--сума по обігу (15.2 цифры)-->
 				<TURNOVERTOTAL>00.00</TURNOVERTOTAL>
-			</ROW>	
+			</ROW>
         	</ZFORMTURNOVER>		
-        	<ZFORMTAX>		
+        	<ZFORMTAX>
 			<ROW ROWNUM="1">
 				<!--ставка ПДВ (64символа, обязательный)-->
-				<TAXNAME>ПДВ А=20%</TAXNAME>
+				<TAXNAME>ПДВ 0%</TAXNAME>
 				<!--сума ПДВ (15.2 цифры)-->
 				<TAXTOTAL>00.00</TAXTOTAL>
-			</ROW>	
+			</ROW>
         	</ZFORMTAX>		
 		<!--Сумма оборота (15.2 цифры)-->
 		<TOTALSUMREAL>00.00</TOTALSUMREAL>
@@ -84,21 +84,21 @@
 	
 <!--Повернення-->
 	<ZFORMSUMRETUNRN>
-        	<ZFORMTURNOVERRET>		
+        	<ZFORMTURNOVERRET>
 			<ROW ROWNUM="1">
 				<!--обіг (64символа, обязательный)-->
-				<TURNOVERNAMERET>Обіг А</TURNOVERNAMERET>
+				<TURNOVERNAMERET>Обіг</TURNOVERNAMERET>
 				<!--сума по обігу (15.2 цифры)-->
 				<TURNOVERTOTALRET>00.00</TURNOVERTOTALRET>
-			</ROW>	
+			</ROW>
         	</ZFORMTURNOVERRET>		
-        	<ZFORMTAXRET>		
+        	<ZFORMTAXRET>
 			<ROW ROWNUM="1">
 				<!--ставка ПДВ (64символа, обязательный)-->
-				<TAXNAMERET>ПДВ А=20%</TAXNAMERET>
+				<TAXNAMERET>ПДВ 0%</TAXNAMERET>
 				<!--сума ПДВ (15.2 цифры)-->
 				<TAXTOTALRET>00.00</TAXTOTALRET>
-			</ROW>	
+			</ROW>
         	</ZFORMTAXRET>		
 		<!--Сумма оборота (15.2 цифры)-->
 		<TOTALSUMRET>00.00</TOTALSUMRET>

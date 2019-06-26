@@ -2,8 +2,8 @@
 <html lang="en">
 	<head>
 		<meta charset="<?php echo $ENCODING; ?>" />
-		<title>Powered by <?php echo $PACKAGE; ?></title>
-		<base href="<?php echo $SCHEME.'://'.$HOST.':'.$PORT.$BASE.'/'; ?>" />
+		<title>E-receipt</title>
+		<base href="<?php echo 'seleznyov9200.ossystem.ua'; ?>" />
         <link rel="stylesheet" href="/ui/css/bootstrap.min.css" type="text/css" />
         <!--<meta http-equiv="content-type" content="text/html; charset=windows-1251">-->
 		<!--<link rel="stylesheet" href="lib/code.css" type="text/css" />-->
@@ -18,10 +18,14 @@
                 <?php echo $title ?>
             </li>
         </ul>
-        <?php if($error): ?>
-            <div class="alert alert-danger" role="alert">
-                <?php echo $error; ?>
-            </div>
+
+        <?php if($errors && count($errors) >0): ?>
+            <?php foreach($errors as $k=>$error): ?>
+                <div class="row alert alert-danger" role="alert">
+                    <?php echo $error; ?>
+                </div>
+                <br/>
+            <?php endforeach; ?>
         <?php else: ?>
 		    <?php echo $this->render(Base::instance()->get('content')); ?>
         <?php endif; ?>
@@ -31,5 +35,6 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="/ui/js/bootstrap.bundle.min.js"></script>
+        <script src="/ui/js/index.js"></script>
 	</body>
 </html>

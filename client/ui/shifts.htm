@@ -1,7 +1,7 @@
 <ul class="list-group">
     <?php foreach($shifts as $key => $shift): ?>
         <li class="list-group-item text-center btn-success">
-            <h4 >Смена <?php echo date_format(date_create($shift->Opened), "d.m.Y"); ?></h4>
+            <h4 >Зміна <?php echo date_format(date_create($shift->Opened), "d.m.Y"); ?></h4>
             <!--<a href="/items/<?php echo $item->id ?>/update">-->
                 <!--<?php echo $item->title; ?>-->
             <!--</a>-->
@@ -9,17 +9,28 @@
         <?php foreach($shift->documents as $key1 => $doc): ?>
             <li class="list-group-item">
                 <a class="btn btn-block btn-light" href="/<?php echo $guid; ?>/cash/<?php echo $id; ?>/shifts/<?php if($doc->DocType == 'ZForm'){ echo 'zform'; }elseif($doc->DocType == 'Check'){ echo 'check'; } ?>/<?php echo $doc->NumFiscal; ?>">
-                    № <?php echo $doc->NumFiscal ?>
+                    № <?php echo $doc->NumFiscal; ?>
                     <?php switch ($doc->DocType){
-                            case 'ZForm': echo 'Z-отчёт';
+                            case 'ZForm': echo 'Z-звіт';
                                 break;
                             case 'Check': {
                                 switch($doc->CheckDocType){
-                                    case 'OpenShift': echo 'Открытие смены';
+                                    case 'OpenShift': echo 'Відкриття зміни';
                                         break;
-                                    case 'CloseShift': echo 'Закрытие смены';
+                                    case 'CloseShift': echo 'Закриття зміни';
                                         break;
-                                    default: echo 'Продажа товара';
+                                    default: {
+                                        switch($doc->CheckDocSubType){
+                                            case 0 : echo 'Продаж товару';
+                                                break;
+                                            case 1 : echo 'Повернення товару';
+                                                break;
+                                            case 2 : echo 'Службове внесення';
+                                                break;
+                                            case 3 : echo 'Службова видача';
+                                                break;
+                                        }
+                                    }
                                         break;
                                 }
                             }
@@ -31,3 +42,5 @@
         <?php endforeach; ?>
     <?php endforeach; ?>
 </ul>
+
+<!--<?php var_dump($shifts) ?>-->

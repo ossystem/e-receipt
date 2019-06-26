@@ -24,26 +24,5 @@ class ItemListModel extends BaseModel {
         $items = self::db()->exec("TRUNCATE TABLE item_list");
         return json_decode(json_encode($items));
     }
-//
-//    public static function getById($id){
-//        $items = self::db()->exec("SELECT * FROM items WHERE id=:id", [":id" => $id]);
-//        return json_decode(json_encode($items[0]));
-//    }
-//
-//    public static function updateItem($id, $params){
-//        $setParams = "";
-//        foreach($params as $k=>$p){
-//            $field = ltrim($k, ":");
-//            $setParams.= ($setParams?",":"")."$field=$k";
-//        }
-//        return self::db()->exec("UPDATE `items`
-//              SET $setParams
-//              WHERE id=:id", array_merge($params, [":id"=>$id]));
-//    }
-//
-//    public static function remove($id){
-//        return self::db()->exec("DELETE FROM `items`
-//              WHERE id=:id", [":id"=>$id]);
-//    }
 
 }

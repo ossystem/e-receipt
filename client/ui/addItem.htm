@@ -1,13 +1,16 @@
+<?php
+    use Helpers\FormatHelper;
+?>
 
-<form method="post" action="/<?php echo $guid; ?>/cash/<?php echo $id ?>/ticket/item/add" class="form">
+<form method="post" action="/<?php echo $guid; ?>/cash/<?php echo $id ?>/ticket/<?php echo $type; ?>/item/add" class="form">
     <div class="col-sm-12">
        <table class="table">
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Название</th>
-              <th scope="col">Количество</th>
-              <th scope="col">Цена</th>
+              <th scope="col">Назва</th>
+              <th scope="col">Кількість</th>
+              <th scope="col">Ціна</th>
             </tr>
           </thead>
           <tbody>
@@ -15,13 +18,13 @@
                 <tr>
                   <th scope="row"><input type="checkbox" class="form-check-input" name="items[<?php echo $item->id; ?>]"/> </th>
                   <td><?php echo $item->title; ?></td>
-                  <td><input type="number" name="counts[<?php echo $item->id; ?>]" value="1"/></td>
-                  <td><?php echo $item->price; ?></td>
+                  <td><input type="number" min="1" name="counts[<?php echo $item->id; ?>]" value="1"/></td>
+                  <td><?php echo FormatHelper::format_dec($item->price); ?></td>
                 </tr>
             <?php endforeach;?>
           </tbody>
         </table>
-        <button type="submit" class="btn btn-success">Добавить</button>
+        <button type="submit" class="btn btn-success">Додати</button>
     </div>
         <!--<button type="submit" class="btn btn-success">Добавить</button>-->
     <!--<ul class="list-group">-->

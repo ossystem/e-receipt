@@ -8,12 +8,6 @@ class ItemModel extends BaseModel {
 
     public static function addItem($params){
 
-//        foreach ($params as $k=>$v){
-//            $params[":$k"] =$v;
-//            unset($params[$k]);
-//        }
-//        var_dump(self::db(), $params);
-//        die();
         self::db()->exec("INSERT INTO `items` (
             `code`,
             `title`,

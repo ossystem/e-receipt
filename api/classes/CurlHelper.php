@@ -2,12 +2,25 @@
 
 namespace Helpers;
 
+/**CurlHelper Класс для работы с CURL */
+
 class CurlHelper{
 
+    /** @var string $fixalServer - url сервера налоговой */
     private static $fixalServer = "http://80.91.165.208/er";
-    private static $cryptServer = "http://192.168.1.172:3100";
+    /** @var string $cryptServerPort - порт сервера ЕЦП */
+    private static $cryptServerPort = 3100;
+    /** @var string $fixalServer - url сервера ЕЦП */
+    private static $cryptServer = "http://192.168.1.172";
+    /** @var int $connectTimeout - ожидание сервера */
+    private static $connectTimeout = 20;
 
-    public static function getCurlResponse($signedData, $path = "cmd"){
+    /**send Отправляет запрос в налоговую
+     * @param $signedData
+     * @param $path
+     * @return string xml
+     */
+    public static function send($signedData, $path = "cmd"){
 
         $request = curl_init();
         curl_setopt_array($request, [
@@ -17,7 +30,7 @@ class CurlHelper{
             CURLOPT_HTTPHEADER => array('Content-Type: application/octet-stream', "Content-Length: ".strlen($signedData)),
             CURLOPT_ENCODING => "",
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_CONNECTTIMEOUT => self::$connectTimeout,
             CURLOPT_VERBOSE => 1,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POSTFIELDS => $signedData
@@ -25,7 +38,7 @@ class CurlHelper{
 
         $return = curl_exec($request);
 
-        if(curl_errno($request))
+        if(curl_errno($request) > 0)
             $return = json_encode(["error" => 'Curl error: ' . curl_error($request)]);
 
         curl_close($request);
@@ -33,29 +46,29 @@ class CurlHelper{
         return $return;
     }
 
+    /**sign Отправляет запрос на сервер ЕЦП для подписи данных
+     * @param $data
+     * @return string подписаный xml
+     */
     public static function sign($data){
-
-        file_put_contents("./bin/fp".time().".txt", $data);
 
         $request = curl_init();
 
         curl_setopt_array($request, [
-            CURLOPT_PORT => "3100",
-            CURLOPT_URL => self::$cryptServer."/sign",
+            CURLOPT_PORT => self::$cryptServerPort,
+            CURLOPT_URL => self::$cryptServer.":".self::$cryptServerPort."/sign",
             CURLOPT_POST => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 20,
-            CURLOPT_TIMEOUT => 20,
-//            CURLOPT_VERBOSE => 1,
+            CURLOPT_CONNECTTIMEOUT => self::$connectTimeout,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POSTFIELDS => $data
         ]);
 
         $return = json_decode(curl_exec($request));
 
-        if(curl_errno($request))
+        if(curl_errno($request) > 0)
             $return = json_encode(["error" => 'Curl error: ' . curl_error($request)]);
         else
             $return = base64_decode($return->data);
@@ -65,16 +78,21 @@ class CurlHelper{
         return $return;
     }
 
+    /**sign Отправляет запрос на сервер ЕЦП для расшифровки данных
+     * @param $data - подписаный xml
+     * @return string xml
+     */
     public static function decrypt($data){
 
         $request = curl_init();
 
         curl_setopt_array($request, [
-            CURLOPT_URL => self::$cryptServer."/decrypt",
+            CURLOPT_PORT => self::$cryptServerPort,
+            CURLOPT_URL => self::$cryptServer.":".self::$cryptServerPort."/decrypt",
             CURLOPT_POST => true,
             CURLOPT_ENCODING => "",
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 20,
+            CURLOPT_CONNECTTIMEOUT => self::$connectTimeout,
             CURLOPT_VERBOSE => 1,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POSTFIELDS => base64_encode($data)
@@ -82,15 +100,13 @@ class CurlHelper{
 
         $return = json_decode(curl_exec($request));
 
-        if(curl_errno($request))
+        if(curl_errno($request) > 0)
             $return = json_encode(["error" => 'Curl error: ' . curl_error($request)]);
         else
             $return = base64_decode($return->data);
 
         curl_close($request);
 
-
         return $return;
-
     }
 }

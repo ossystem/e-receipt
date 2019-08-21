@@ -9,7 +9,7 @@ class CurlHelper{
     /** @var string $fixalServer - url сервера налоговой */
     private static $fixalServer = "http://80.91.165.208/er";
     /** @var string $cryptServerPort - порт сервера ЕЦП */
-    private static $cryptServerPort = 3100;
+    private static $cryptServerPort = 3101;
     /** @var string $fixalServer - url сервера ЕЦП */
     private static $cryptServer = "http://192.168.1.172";
     /** @var int $connectTimeout - ожидание сервера */

@@ -16,7 +16,7 @@
 
 3.1) mysql -u username -p ereceipt < path_to_project/client/ereceipt.sql
 
-3.2) Редактируем настройку подключения к базе (настройка соединения mysql производится в файле path_to_project/client/models/BaseModel.php)
+3.2) Редактируем настройку подключения к базе (настройка соединения mysql производится в файле path_to_project/api/ereceipt.tst (через fastcgi_params или через environment variables))
 
 4) Создание виртуального хоста:
 
@@ -39,10 +39,25 @@
       
 5) Запускаем composer install
 
-6) Редактирование настроек подключения к серверам прооизводится в файлах:
-   path_to_project/api/classes/CurlHelper.php,
-   path_to_project/client/classes/CurlHelper.php
+6) Редактирование настроек подключения к серверам прооизводится в файле:
+    /etc/nginx/sites-available/ereceipt.tst (через fastcgi_params или через environment variables)
+    
+    список используемых переменных окружения:
+    
+    fastcgi_param MYSQL_HOST localhost; - mysql хост
+    fastcgi_param MYSQL_PORT 3306; - mysql порт
+    fastcgi_param MYSQL_DB ereceipt; - название бд
+    fastcgi_param MYSQL_USER root; - mysql user
+    fastcgi_param MYSQL_PASS 123456; - mysql password
+  
+    fastcgi_param API_SERVER http://seleznyov9300.ossystem.ua/; - api сервер
+    
+    fastcgi_param FISCAL_SERVER http://80.91.165.208/er; - сервер налоговой
+    fastcgi_param CRYPT_SERVER http://192.168.1.172; - сервер шифрования
+    fastcgi_param CRYPT_SERVER_PORT 3101; - порт сервера шифрования
+    fastcgi_param CONNECTION_TIMEOUT 20;  - таймаут
    
 7) sudo chmod -R 777 path_to_project/client/json
+
    
       

@@ -12,7 +12,6 @@ class CacheHelper{
         $response = CurlHelper::send($params);
         file_put_contents($fileName, $response);
         $obj = json_decode($response);
-
         return $obj;
     }
 

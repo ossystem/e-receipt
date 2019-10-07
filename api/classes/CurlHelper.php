@@ -6,15 +6,6 @@ namespace Helpers;
 
 class CurlHelper{
 
-    /** @var string $fixalServer - url сервера налоговой */
-    private static $fixalServer = "http://80.91.165.208/er";
-    /** @var string $cryptServerPort - порт сервера ЕЦП */
-    private static $cryptServerPort = 3101;
-    /** @var string $fixalServer - url сервера ЕЦП */
-    private static $cryptServer = "http://192.168.1.172";
-    /** @var int $connectTimeout - ожидание сервера */
-    private static $connectTimeout = 20;
-
     /**send Отправляет запрос в налоговую
      * @param $signedData
      * @param $path
@@ -23,14 +14,18 @@ class CurlHelper{
     public static function send($signedData, $path = "cmd"){
 
         $request = curl_init();
+
+        $fixalServer = array_key_exists('FISCAL_SERVER', $_ENV) ? $_ENV['FISCAL_SERVER'] : $_SERVER['FISCAL_SERVER'];
+        $connectTimeout = array_key_exists('CONNECTION_TIMEOUT', $_ENV) ? $_ENV['CONNECTION_TIMEOUT'] : $_SERVER['CONNECTION_TIMEOUT'];
+
         curl_setopt_array($request, [
-            CURLOPT_URL => self::$fixalServer."/$path",
+            CURLOPT_URL => $fixalServer."/$path",
             CURLOPT_POST => true,
             CURLOPT_HEADER => false,
             CURLOPT_HTTPHEADER => array('Content-Type: application/octet-stream', "Content-Length: ".strlen($signedData)),
             CURLOPT_ENCODING => "",
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => self::$connectTimeout,
+            CURLOPT_CONNECTTIMEOUT => $connectTimeout,
             CURLOPT_VERBOSE => 1,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POSTFIELDS => $signedData
@@ -52,16 +47,20 @@ class CurlHelper{
      */
     public static function sign($data){
 
+        $connectTimeout = array_key_exists('CONNECTION_TIMEOUT', $_ENV) ? $_ENV['CONNECTION_TIMEOUT'] : $_SERVER['CONNECTION_TIMEOUT'];
+        $cryptServerPort = array_key_exists('CRYPT_SERVER_PORT',$_ENV) ? $_ENV['CRYPT_SERVER_PORT'] : $_SERVER['CRYPT_SERVER_PORT'];
+        $cryptServer = array_key_exists('CRYPT_SERVER', $_ENV) ? $_ENV['CRYPT_SERVER'] : $_SERVER['CRYPT_SERVER'];
+
         $request = curl_init();
 
         curl_setopt_array($request, [
-            CURLOPT_PORT => self::$cryptServerPort,
-            CURLOPT_URL => self::$cryptServer.":".self::$cryptServerPort."/sign",
+            CURLOPT_PORT => $cryptServerPort,
+            CURLOPT_URL => $cryptServer.":".$cryptServerPort."/sign",
             CURLOPT_POST => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => self::$connectTimeout,
+            CURLOPT_CONNECTTIMEOUT => $connectTimeout,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POSTFIELDS => $data
         ]);
@@ -84,15 +83,19 @@ class CurlHelper{
      */
     public static function decrypt($data){
 
+        $connectTimeout = array_key_exists('CONNECTION_TIMEOUT', $_ENV) ? $_ENV['CONNECTION_TIMEOUT'] : $_SERVER['CONNECTION_TIMEOUT'];
+        $cryptServerPort = array_key_exists('CRYPT_SERVER_PORT',$_ENV) ? $_ENV['CRYPT_SERVER_PORT'] : $_SERVER['CRYPT_SERVER_PORT'];
+        $cryptServer = array_key_exists('CRYPT_SERVER',$_ENV) ? $_ENV['CRYPT_SERVER'] : $_SERVER['CRYPT_SERVER'];
+
         $request = curl_init();
 
         curl_setopt_array($request, [
-            CURLOPT_PORT => self::$cryptServerPort,
-            CURLOPT_URL => self::$cryptServer.":".self::$cryptServerPort."/decrypt",
+            CURLOPT_PORT => $cryptServerPort,
+            CURLOPT_URL => $cryptServer.":".$cryptServerPort."/decrypt",
             CURLOPT_POST => true,
             CURLOPT_ENCODING => "",
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => self::$connectTimeout,
+            CURLOPT_CONNECTTIMEOUT => $connectTimeout,
             CURLOPT_VERBOSE => 1,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POSTFIELDS => base64_encode($data)

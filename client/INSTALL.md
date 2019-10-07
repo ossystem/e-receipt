@@ -43,4 +43,6 @@
    path_to_project/api/classes/CurlHelper.php,
    path_to_project/client/classes/CurlHelper.php
    
+7) sudo chmod -R 777 path_to_project/client/json
+   
       

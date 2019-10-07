@@ -14,6 +14,7 @@ server {
         fastcgi_split_path_info ^(.+\.php)(/.*)$;
         include fastcgi_params;
 	fastcgi_read_timeout 3000;
+	fastcgi_param SERVER_NAME $http_host;
 
         # optionally set the value of the environment variables used in the application
         # fastcgi_param APP_ENV prod;

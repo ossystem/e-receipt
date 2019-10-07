@@ -17,6 +17,14 @@ server {
 	fastcgi_param SERVER_NAME $http_host;
 
         # optionally set the value of the environment variables used in the application
+        fastcgi_param MYSQL_HOST localhost;
+        fastcgi_param MYSQL_PORT 3306;
+	fastcgi_param MYSQL_DB ereceipt;
+	fastcgi_param MYSQL_USER root;
+	fastcgi_param MYSQL_PASS 123456;
+
+	fastcgi_param API_SERVER http://seleznyov9300.ossystem.ua/;
+
         # fastcgi_param APP_ENV prod;
         # fastcgi_param APP_SECRET <app-secret-id>;
         # fastcgi_param DATABASE_URL "mysql://db_user:db_pass@host:3306/db_name";
@@ -65,7 +73,11 @@ server {
 	fastcgi_read_timeout 3000;
 
         # optionally set the value of the environment variables used in the application
-        # fastcgi_param APP_ENV prod;
+        fastcgi_param FISCAL_SERVER http://80.91.165.208/er;
+        fastcgi_param CRYPT_SERVER http://192.168.1.172;
+	fastcgi_param CRYPT_SERVER_PORT 3100;
+	fastcgi_param CONNECTION_TIMEOUT 20;
+
         # fastcgi_param APP_SECRET <app-secret-id>;
         # fastcgi_param DATABASE_URL "mysql://db_user:db_pass@host:3306/db_name";
 

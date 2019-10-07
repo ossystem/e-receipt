@@ -25,6 +25,36 @@ if ((float)PCRE_VERSION < 7.9)
 $f3->config('config.ini');
 libxml_use_internal_errors(true);
 
+$envErrors=[];
+
+if(!(array_key_exists('API_SERVER', $_ENV) || array_key_exists('API_SERVER', $_SERVER)))
+    $envErrors[] = "API_SERVER";
+
+if(!(array_key_exists('MYSQL_HOST', $_ENV) || array_key_exists('MYSQL_HOST', $_SERVER)))
+    $envErrors[] = "MYSQL_HOST";
+
+if(!(array_key_exists('MYSQL_PORT', $_ENV) || array_key_exists('MYSQL_PORT', $_SERVER)))
+    $envErrors[] = "MYSQL_PORT";
+
+if(!(array_key_exists('CRYPT_SERVER_PORT', $_ENV) || array_key_exists('MYSQL_DB', $_SERVER)))
+    $envErrors[] = "MYSQL_DB";
+
+if(!(array_key_exists('MYSQL_USER', $_ENV) || array_key_exists('MYSQL_USER', $_SERVER)))
+    $envErrors[] = "MYSQL_USER";
+
+if(!(array_key_exists('MYSQL_PASS', $_ENV) || array_key_exists('MYSQL_PASS', $_SERVER)))
+    $envErrors[] = "MYSQL_PASS";
+
+if($envErrors && count($envErrors) > 0) {
+
+        $f3->set('errors', array_map(
+            function($el){
+                return "Змінна оточення $el не існує або пуста.";
+            },$envErrors));
+
+        echo View::instance()->render('layout.htm');
+        die();
+}
 //header('Content-Type: text/html; charset=windows-1251');
 
 $f3->route('GET /',

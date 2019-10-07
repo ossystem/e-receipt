@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost
--- Время создания: Авг 21 2019 г., 15:22
+-- Время создания: Окт 07 2019 г., 18:20
 -- Версия сервера: 5.7.27-0ubuntu0.16.04.1
--- Версия PHP: 7.1.31-1+ubuntu16.04.1+deb.sury.org+1
+-- Версия PHP: 7.1.32-1+ubuntu16.04.1+deb.sury.org+1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -147,7 +147,7 @@ ALTER TABLE `items`
 -- AUTO_INCREMENT для таблицы `item_list`
 --
 ALTER TABLE `item_list`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT для таблицы `orders`
 --

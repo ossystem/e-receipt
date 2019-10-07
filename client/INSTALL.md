@@ -54,7 +54,7 @@
     
     fastcgi_param FISCAL_SERVER http://80.91.165.208/er; - сервер налоговой
     fastcgi_param CRYPT_SERVER http://192.168.1.172; - сервер шифрования
-    fastcgi_param CRYPT_SERVER_PORT 3101; - порт сервера шифрования
+    fastcgi_param CRYPT_SERVER_PORT 3100; - порт сервера шифрования
     fastcgi_param CONNECTION_TIMEOUT 20;  - таймаут
    
 7) sudo chmod -R 777 path_to_project/client/json

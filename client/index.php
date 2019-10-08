@@ -36,7 +36,7 @@ if(!(array_key_exists('MYSQL_HOST', $_ENV) || array_key_exists('MYSQL_HOST', $_S
 if(!(array_key_exists('MYSQL_PORT', $_ENV) || array_key_exists('MYSQL_PORT', $_SERVER)))
     $envErrors[] = "MYSQL_PORT";
 
-if(!(array_key_exists('CRYPT_SERVER_PORT', $_ENV) || array_key_exists('MYSQL_DB', $_SERVER)))
+if(!(array_key_exists('MYSQL_DB', $_ENV) || array_key_exists('MYSQL_DB', $_SERVER)))
     $envErrors[] = "MYSQL_DB";
 
 if(!(array_key_exists('MYSQL_USER', $_ENV) || array_key_exists('MYSQL_USER', $_SERVER)))

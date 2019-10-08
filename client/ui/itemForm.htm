@@ -30,7 +30,7 @@
     <div class="form-group row">
         <label class="col-sm-3 col-form-label" for="code_uktz">Код по УКТЗЕД:</label>
         <div class="col-sm-9">
-            <input type="text" name="params[:code_uktz]" value="<?php echo $item?$item->code_uktz:''; ?>" class="form-control" id="code_uktz">
+            <input type="text" name="params[:code_uktz]" maxlength="15" size="15" value="<?php echo $item?$item->code_uktz:''; ?>" class="form-control" id="code_uktz">
         </div>
     </div>
 
@@ -41,7 +41,7 @@
     <div class="form-group row">
         <label class="col-sm-3 col-form-label" for="em_code">Код:</label>
         <div class="col-sm-9">
-            <input type="text" name="params[:em_code]" value="<?php echo $item?$item->em_code:''; ?>" class="form-control" id="em_code">
+            <input type="text" name="params[:em_code]" maxlength="5" size="5" value="<?php echo $item?$item->em_code:''; ?>" class="form-control" id="em_code">
         </div>
     </div>
 
@@ -59,14 +59,14 @@
     <div class="form-group row">
         <label class="col-sm-3 col-form-label" for="pdv_litera">Літера:</label>
         <div class="col-sm-9">
-            <input type="text" name="params[:pdv_litera]" value="<?php echo $item?$item->pdv_litera:''; ?>" class="form-control" id="pdv_litera">
+            <input type="text" name="params[:pdv_litera]" maxlength="1" size="1" value="<?php echo $item?$item->pdv_litera:''; ?>" class="form-control" id="pdv_litera">
         </div>
     </div>
 
     <div class="form-group row">
         <label class="col-sm-3 col-form-label" for="pdv_stavka">Ставка(%):</label>
         <div class="col-sm-9">
-            <input type="text" name="params[:pdv_stavka]" value="<?php echo $item?$item->pdv_stavka:''; ?>" class="form-control" id="pdv_stavka">
+            <input type="number" name="params[:pdv_stavka]" value="<?php echo $item?$item->pdv_stavka:''; ?>" class="form-control" id="pdv_stavka">
         </div>
     </div>
 
@@ -77,14 +77,14 @@
     <div class="form-group row">
         <label class="col-sm-3 col-form-label" for="action_litera">Літера:</label>
         <div class="col-sm-9">
-            <input type="text" name="params[:action_litera]" value="<?php echo $item?$item->action_litera:''; ?>" class="form-control" id="action_litera">
+            <input type="text" name="params[:action_litera]" maxlength="1" size="1" value="<?php echo $item?$item->action_litera:''; ?>" class="form-control" id="action_litera">
         </div>
     </div>
 
     <div class="form-group row">
         <label class="col-sm-3 col-form-label" for="action_stavka">Ставка(%):</label>
         <div class="col-sm-9">
-            <input type="text" name="params[:action_stavka]" value="<?php echo $item?$item->action_stavka:''; ?>" class="form-control" id="action_stavka">
+            <input type="number" name="params[:action_stavka]" value="<?php echo $item?$item->action_stavka:''; ?>" class="form-control" id="action_stavka">
         </div>
     </div>
 

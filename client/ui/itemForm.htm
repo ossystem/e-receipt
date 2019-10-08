@@ -7,14 +7,14 @@
     <div class="form-group row">
         <label class="col-sm-3 col-form-label" for="code">Код:</label>
         <div class="col-sm-9">
-            <input type="text" name="params[:code]" value="<?php echo $item?$item->code:''; ?>" class="form-control" id="code">
+            <input type="text" name="params[:code]" maxlength="64" size="64" value="<?php echo $item?$item->code:''; ?>" class="form-control" id="code">
         </div>
     </div>
 
     <div class="form-group row">
         <label class="col-sm-3 col-form-label" for="title">Найменування:</label>
         <div class="col-sm-9">
-            <input type="text" name="params[:title]" value="<?php echo $item?$item->title:''; ?>" class="form-control" id="title">
+            <input type="text" name="params[:title]" maxlength="128" size="128" value="<?php echo $item?$item->title:''; ?>" class="form-control" id="title">
         </div>
     </div>
 
@@ -48,7 +48,7 @@
     <div class="form-group row">
         <label class="col-sm-3 col-form-label" for="em_title">Найменування:</label>
         <div class="col-sm-9">
-            <input type="text" name="params[:em_title]" value="<?php echo $item?$item->em_title:''; ?>" class="form-control" id="em_title">
+            <input type="text" name="params[:em_title]" maxlength="64" size="64" value="<?php echo $item?$item->em_title:''; ?>" class="form-control" id="em_title">
         </div>
     </div>
 

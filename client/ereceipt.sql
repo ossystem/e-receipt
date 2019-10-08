@@ -79,7 +79,7 @@ CREATE TABLE `order_items` (
   `id` int(10) UNSIGNED NOT NULL,
   `item_id` int(10) UNSIGNED NOT NULL,
   `count` int(10) UNSIGNED NOT NULL,
-  `fixal_num` int(10) UNSIGNED NOT NULL,
+  `fixal_num` int(10) UNSIGNED DEFAULT NULL,
   `order_id` int(10) UNSIGNED NOT NULL,
   `pdv_sum` decimal(10,2) UNSIGNED NOT NULL,
   `excise_sum` decimal(10,2) UNSIGNED NOT NULL,

@@ -15,7 +15,7 @@ class libApi{
     public static function objects(){
         $return = CurlHelper::sign(json_encode(["Command" => "Objects"]));
         if(!isset($return['error']))
-            $return = CurlHelper::send($return);
+            $return = CurlHelper::send($return, "objects");
         return $return;
     }
 
@@ -27,7 +27,7 @@ class libApi{
         $return = CurlHelper::sign(json_encode(["Command" => "CashRegisterState", "NumFiscal" => $numFiscal]));
 
         if(!isset($return['error']))
-            $return = CurlHelper::send($return);
+            $return = CurlHelper::send($return, "CashRegisterState");
 
         return $return;
     }
@@ -44,7 +44,7 @@ class libApi{
         ]));
 
         if(!isset($return['error']))
-            $return = CurlHelper::send($return);
+            $return = CurlHelper::send($return, "Documents");
 
         return $return;
     }
@@ -60,7 +60,7 @@ class libApi{
         $return = CurlHelper::sign($xml);
 
         if(!isset($return['error']))
-            $return = CurlHelper::send($return, "doc");
+            $return = CurlHelper::send($return, "check.xml", "doc");
 
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
@@ -87,7 +87,7 @@ class libApi{
         ]));
 
         if(!isset($return['error']))
-            $return = CurlHelper::send($return);
+            $return = CurlHelper::send($return, "Shifts");
 
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
@@ -108,7 +108,7 @@ class libApi{
         ]));
 
         if(!isset($return['error']))
-            $return = CurlHelper::send($return);
+            $return = CurlHelper::send($return, "Check");
 
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
@@ -131,7 +131,7 @@ class libApi{
         ]));
 
         if(!isset($return['error']))
-            $return = CurlHelper::send($return);
+            $return = CurlHelper::send($return, "zForm");
 
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
@@ -153,13 +153,14 @@ class libApi{
         $return = CurlHelper::sign($xml);
 
         if(!isset($return['error']))
-            $return = CurlHelper::send($return, "doc");
+            $return = CurlHelper::send($return, "shift.xml",  "doc");
 
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
 
         if(!isset($return['error']))
             $return = XMLHelper::xmlToJson($return);
+
 
         return $return;
 
@@ -175,7 +176,7 @@ class libApi{
         $return = CurlHelper::sign($xml);
 
         if(!isset($return['error']))
-            $return = CurlHelper::send($return, "doc");
+            $return = CurlHelper::send($return, "zform.xml", "doc");
 
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
@@ -196,7 +197,7 @@ class libApi{
         $xml = XMLHelper::makeShiftXML($params);
         $return = CurlHelper::sign($xml);
         if(!isset($return['error']))
-            $return = CurlHelper::send($return, "doc");
+            $return = CurlHelper::send($return, "shift.xml", "doc");
 
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);

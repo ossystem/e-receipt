@@ -61,7 +61,7 @@ $f3->route('GET /',
     function($f3) {
         $obj = CacheHelper::responseCache(["Command" => "Objects"], "./json/responses/objects.json");
 
-        if(!$obj)
+        if(!$obj || !$obj->TaxObjects)
             $f3->set('errors', ["Неможливо отримати точки продажу"]);
 
         if($obj->error)
@@ -82,10 +82,15 @@ $f3->route('GET /@guid/cashRegisters',
 
         $obj = CacheHelper::getObjectByGUID($guid);
 
-        if($obj->error)
+        if(!$obj || !$obj->TransactionsRegistrars)
+            $f3->set('errors', ["Неможливо отримати каси."]);
+
+        if($obj->error){
             $f3->set('errors', [$obj->error]);
+        }
         else {
-            $f3->set('cashRegisters', $obj->CashRegisters);
+            $f3->set('TransactionsRegistrars', $obj->TransactionsRegistrars);
+//            print_r($obj->Address);
             $f3->set('content', 'cashRegisters.htm');
         }
 
@@ -213,6 +218,9 @@ $f3->route('GET /@guid/cash/@id/shift/open',
         $errors = [];
 
         $response = json_decode($response, TRUE);
+
+        if(!$response)
+            $response = ['error' => "Неможливо відкрити зміну."];
 
         if(!$response['error']) {
             OrdersModel::clear();
@@ -507,40 +515,45 @@ $f3->route('GET /@guid/cash/@id/shifts',
         if($shifts->error)
             $errors[] = $shifts->error;
         else {
-            foreach ($shifts->Shifts as $k => $v) {
+            if($shifts && $shifts->Shifts) {
+                foreach ($shifts->Shifts as $k => $v) {
 
-                $documents = CurlHelper::send([
-                    "Command" => "Documents",
-                    "ShiftId" => $v->ShiftId
-                ]);
-
-                $docs = json_decode($documents);
-
-                if($docs->error)
-                    $errors[] = $docs->error;
-
-                $v->documents = array_reverse($docs->Documents);
-
-                foreach ($v->documents as $k1 => $v1) {
-
-                    $check = CurlHelper::send([
-                        "Command" => "CheckShow",
-                        "NumFiscal" => $v1->NumFiscal
+                    $documents = CurlHelper::send([
+                        "Command" => "Documents",
+                        "ShiftId" => $v->ShiftId
                     ]);
 
-                    if ($check) {
-                        $check = json_decode($check);
-                        $v1->CheckDocSubType = $check->CHECKHEAD->DOCSUBTYPE;
+                    $docs = json_decode($documents);
 
-                        if(count($shifts->Shifts) <=0 )
-                            $errors[] = "За последние 6 часов не было никакой активности.";
+                    if ($docs->error)
+                        $errors[] = $docs->error;
+
+                    if ($docs->Documents && count($docs->Documents) >= 0){
+                        $v->documents = array_reverse($docs->Documents);
+                        foreach ($v->documents as $k1 => $v1) {
+
+                            $check = CurlHelper::send([
+                                "Command" => "CheckShow",
+                                "NumFiscal" => $v1->NumFiscal
+                            ]);
+
+                            if ($check) {
+                                $check = json_decode($check);
+                                $v1->CheckDocSubType = $check->CHECKHEAD->DOCSUBTYPE;
+
+                                if ($check->error)
+                                    $errors[] = $check->error;
+
+                            }
+                        }
                     }
-
                 }
-            }
 
-            $f3->set("shifts", array_reverse($shifts->Shifts));
-            $f3->set('content', 'shifts.htm');
+                $f3->set("shifts", array_reverse($shifts->Shifts));
+                $f3->set('content', 'shifts.htm');
+            }else{
+                    $errors[] = "За последние 6 часов не было никакой активности.";
+            }
         }
 
         $f3->set('id', $id);

@@ -11,7 +11,7 @@ class CurlHelper{
      * @param $path
      * @return string xml
      */
-    public static function send($signedData, $path = "cmd"){
+    public static function send($signedData, $command, $path = "cmd"){
 
         $request = curl_init();
 
@@ -37,6 +37,9 @@ class CurlHelper{
             $return = json_encode(["error" => 'Curl error: ' . curl_error($request)]);
 
         curl_close($request);
+
+        if($return && mb_substr($return, 0,11) == 'Код помилки')
+            $return = json_encode(["error" => "[ " . date("Y-m-d") . " - ". $command. " ] : " . $return]);
 
         return $return;
     }

@@ -166,7 +166,7 @@ $f3->route('GET /@guid/cash/@id',
         $guid = $f3->PARAMS['guid'];
 
         $cash = CacheHelper::responseCache([
-            "Command" => "CashRegisterState",
+            "Command" => "TransactionsRegistrarState",
             "NumFiscal" => $id
         ], "./json/responses/cash$id.json");
 

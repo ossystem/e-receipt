@@ -55,7 +55,7 @@ class CacheHelper{
 
         if(!$cashRegister || !$cashRegister->NextLocalNum)
             $cashRegister = self::responseCache([
-                "Command" => "CashRegisterState",
+                "Command" => "TransactionsRegistrarState",
                 "NumFiscal" => $id
             ], $fileName);
 

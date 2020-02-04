@@ -25,6 +25,12 @@ class CurlHelper{
 
         curl_close($ch);
 
+        $obj = json_decode($response);
+
+        if($obj->error) {
+            echo $obj->error;
+            die();
+        }
 
         return $response;
     }

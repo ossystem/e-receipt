@@ -62,6 +62,9 @@ class libApi{
         if(!isset($return['error']))
             $return = CurlHelper::send($return, "check.xml", "doc");
 
+        if($return['error'])
+            return $return;
+
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
 
@@ -89,6 +92,9 @@ class libApi{
         if(!isset($return['error']))
             $return = CurlHelper::send($return, "Shifts");
 
+        if($return['error'])
+            return $return;
+
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
 
@@ -109,6 +115,9 @@ class libApi{
 
         if(!isset($return['error']))
             $return = CurlHelper::send($return, "Check");
+
+        if($return['error'])
+            return $return;
 
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
@@ -133,6 +142,9 @@ class libApi{
         if(!isset($return['error']))
             $return = CurlHelper::send($return, "zForm");
 
+        if($return['error'])
+            return $return;
+
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
 
@@ -155,12 +167,14 @@ class libApi{
         if(!isset($return['error']))
             $return = CurlHelper::send($return, "shift.xml",  "doc");
 
+        if($return['error'])
+            return $return;
+
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
 
         if(!isset($return['error']))
             $return = XMLHelper::xmlToJson($return);
-
 
         return $return;
 
@@ -177,6 +191,9 @@ class libApi{
 
         if(!isset($return['error']))
             $return = CurlHelper::send($return, "zform.xml", "doc");
+
+        if($return['error'])
+            return $return;
 
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);
@@ -198,6 +215,9 @@ class libApi{
         $return = CurlHelper::sign($xml);
         if(!isset($return['error']))
             $return = CurlHelper::send($return, "shift.xml", "doc");
+
+        if($return['error'])
+            return $return;
 
         if(!isset($return['error']))
             $return = CurlHelper::decrypt($return);

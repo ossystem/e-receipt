@@ -61,15 +61,17 @@ $f3->route('GET /',
     function($f3) {
         $obj = CacheHelper::responseCache(["Command" => "Objects"], "./json/responses/objects.json");
 
-        if(!$obj || !$obj->TaxObjects)
-            $f3->set('errors', ["Неможливо отримати точки продажу"]);
+//        if(!$obj || !$obj->TaxObjects)
+//            $f3->set('errors', ["Неможливо отримати точки продажу"]);
 
         if($obj->error)
             $f3->set('errors', [$obj->error]);
+        else
+            $f3->set('taxObjects', $obj->TaxObjects);
 
         $f3->set('isMain', true);
         $f3->set('title', "Точки продажу");
-        $f3->set('taxObjects', $obj->TaxObjects);
+
         $f3->set('content', 'main.htm');
 
         echo View::instance()->render('layout.htm');
@@ -82,8 +84,8 @@ $f3->route('GET /@guid/cashRegisters',
 
         $obj = CacheHelper::getObjectByGUID($guid);
 
-        if(!$obj || !$obj->TransactionsRegistrars)
-            $f3->set('errors', ["Неможливо отримати каси."]);
+//        if(!$obj || !$obj->TransactionsRegistrars)
+//            $f3->set('errors', ["Неможливо отримати каси."]);
 
         if($obj->error){
             $f3->set('errors', [$obj->error]);
@@ -219,8 +221,8 @@ $f3->route('GET /@guid/cash/@id/shift/open',
 
         $response = json_decode($response, TRUE);
 
-        if(!$response)
-            $response = ['error' => "Неможливо відкрити зміну."];
+//        if(!$response)
+//            $response = ['error' => "Неможливо відкрити зміну."];
 
         if(!$response['error']) {
             OrdersModel::clear();
